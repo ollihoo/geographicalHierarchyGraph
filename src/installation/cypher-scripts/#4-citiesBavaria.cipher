@@ -1,0 +1,4 @@
+LOAD CSV WITH HEADERS FROM "..." AS line FIELDTERMINATOR '|'
+MATCH (d:District{name:line.Bezirk})
+MERGE (ci:City{name:line.Stadt})
+MERGE (ci)-[:BELONGS_TO]->(d)
