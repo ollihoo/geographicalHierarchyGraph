@@ -1,4 +1,4 @@
-LOAD CSV WITH HEADERS FROM "..." AS line FIELDTERMINATOR '|'
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/ollihoo/geographicalHierarchyGraph/master/src/installation/csv/kreisfreieStaedte.csv" AS line FIELDTERMINATOR '|'
 MATCH (d:District{name:line.Bezirk})
 MERGE (ci:City{name:line.Stadt})
 MERGE (ci)-[:BELONGS_TO]->(d)
