@@ -1,11 +1,11 @@
-#PoliticalHierarchyGraph
+# PoliticalHierarchyGraph
 
 This project is intended to be a test how to setup a hierarchical system
 (in this case all districts, cities of Bavaria-Germany) in Neo4j.
 
 It is also intended to test which queries you can do on this data.
 
-##Installation
+## Installation
 * get Neo4j - version 3.2.0, Community Edition (http://neo4j.com/download/)
 * start it according to installation instructions
 * open your browser and type http://localhost:7474 to start neo4j console
@@ -14,7 +14,7 @@ It is also intended to test which queries you can do on this data.
 
 System is ready for requests.
 
-##Do Requests on data
+## Do Requests on data
 
 ### Get all districts of Bavaria:
   MATCH (d:Districts)-[:BELONGS_TO]->(s:State{name:"Bayern"}) return d.name
@@ -28,3 +28,9 @@ System is ready for requests.
   MATCH path=(n)-[:BELONGS_TO*1..]->(:State{name:"Bayern"}) 
    WHERE n.name = "Tutzing"
    RETURN extract(node in nodes(path) | node.name)
+   
+ ## Links
+ * https://de.wikipedia.org/wiki/Land_%28Deutschland%29
+ * https://de.wikipedia.org/wiki/Liste_der_Kreiszugeh%C3%B6rigkeit_bayerischer_Gemeinden
+ * https://de.wikipedia.org/wiki/Liste_der_Landkreise_und_kreisfreien_St%C3%A4dte_in_Bayern
+ 
