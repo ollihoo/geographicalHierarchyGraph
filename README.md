@@ -15,3 +15,16 @@ It is also intended to test which queries you can do on this data.
 System is ready for requests.
 
 ##Do Requests on data
+
+### Get all districts of Bavaria:
+  MATCH (d:Districts)-[:BELONGS_TO]->(s:State{name:"Bayern"}) return d.name
+  
+### Get all communities within rural district 'Traunstein'
+       
+  MATCH (c:Community)-[:BELONGS_TO]->(:RuralDistrict{name:"Traunstein"}) RETURN c.name
+  
+### Is there a unit called "Tutzing"? Where is it located within the hierarchy?
+ 
+  MATCH path=(n)-[:BELONGS_TO*1..]->(:State{name:"Bayern"}) 
+   WHERE n.name = "Tutzing"
+   RETURN extract(node in nodes(path) | node.name)
