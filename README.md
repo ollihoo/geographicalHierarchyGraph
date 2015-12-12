@@ -5,6 +5,12 @@ This project is intended to be a test how to setup a hierarchical system
 
 It is also intended to test which queries you can do on this data.
 
+For legal issues:
+Daten von <a href="http://www.openstreetmap.org/">OpenStreetMap</a> - 
+Veröffentlicht unter <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>
+
+This application uses interfaces to OSM to parse data.
+
 ## Installation
 * get Neo4j - version 3.2.0, Community Edition (http://neo4j.com/download/)
 * start it according to installation instructions
