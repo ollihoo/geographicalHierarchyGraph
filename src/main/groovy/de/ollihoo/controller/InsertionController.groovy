@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
-class DemonstrationController {
+class InsertionController {
 
     @Autowired
     PointOfInterestRepository pointOfInterestRepository
@@ -17,10 +17,9 @@ class DemonstrationController {
     @Autowired
     ListingService listingService
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
     def index(Model model) {
-
         model.addAttribute("pois", listingService.parsePointOfInterests())
-        "index"
+        "insert"
     }
 }
