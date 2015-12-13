@@ -2,7 +2,6 @@ package de.ollihoo.osm
 
 import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
-import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -25,13 +24,13 @@ class OsmServiceSpec extends Specification {
         PointOfInterest result = service.getPointOfInterestByRequest("Berlin, Australische Botschaft")
 
         then:
-        1 * service.osmNameResolver.parsePoiName(COMBINED_NAME) >> "Australische Botschaft"
-        1 * service.osmNameResolver.parseCity(COMBINED_NAME) >> expectedCity
+        1 * service.osmNameResolver.parsePoiName(_) >> "Australische Botschaft"
+        1 * service.osmNameResolver.parseCombinedAddress(_) >> expectedCity
         result.type == "embassy"
         result.name == "Australische Botschaft"
         result.lat == new BigDecimal("52.5122655")
         result.lng == new BigDecimal("13.4093648")
-        result.city == expectedCity
+        result.location == expectedCity
     }
 
     @Unroll

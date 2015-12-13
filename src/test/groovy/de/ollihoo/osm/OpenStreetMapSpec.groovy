@@ -11,7 +11,7 @@ class OpenStreetMapSpec extends Specification {
         def url = new URL("http://nominatim.openstreetmap.org/search.php?format=json&q=Berlin,%20Australische%20Botschaft")
 
         when:
-        def result = new JsonSlurper().parse(url)
+        def result = new JsonSlurper().parse(url, "utf-8")
 
         then:
         result.type[0] == "embassy"

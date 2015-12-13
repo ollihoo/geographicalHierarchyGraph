@@ -1,10 +1,11 @@
 package de.ollihoo.domain
 
+import groovy.transform.ToString
 import org.neo4j.ogm.annotation.GraphId
 import org.neo4j.ogm.annotation.NodeEntity
 import org.neo4j.ogm.annotation.Relationship
 
-@NodeEntity
+@NodeEntity @ToString
 class PointOfInterest {
     @GraphId Long id
     String name
@@ -12,6 +13,7 @@ class PointOfInterest {
     BigDecimal lat
     BigDecimal lng
 
-    @Relationship(type = "IS_LOCATED_IN", direction = Relationship.INCOMING)
-    City city
+    @Relationship(type = "LOCATED_AT", direction = Relationship.OUTGOING)
+    AdministrativeUnit location
+
 }

@@ -21,7 +21,7 @@ class OsmService {
                     lat: new BigDecimal(result.lat[0]),
                     lng: new BigDecimal(result.lon[0]),
                     type: result.type[0],
-                    city: osmNameResolver.parseCity(combinedName)
+                    location: osmNameResolver.parseCombinedAddress(combinedName)
             )
         } else {
             null

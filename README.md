@@ -11,30 +11,21 @@ Veröffentlicht unter <a href="http://opendatacommons.org/licenses/odbl/">ODbL</
 
 This application uses interfaces to OSM to parse data.
 
-## Installation
-* get Neo4j - version 3.2.0, Community Edition (http://neo4j.com/download/)
+## Installation Database
+* get Neo4j - version 3.2.1, Community Edition (http://neo4j.com/download/)
 * start it according to installation instructions
 * open your browser and type http://localhost:7474 to start neo4j console
-* go to directory src/main/resources/cypher-scripts in this project
-* copy every file in the given order into console and press Ctrl-Return
+* when you are asked for a password, set it. Don't forget it, you'll need it
 
-System is ready for requests.
-
-## Do Requests on data
-
-### Get all districts of Bavaria:
-  MATCH (d:Districts)-[:BELONGS_TO]->(s:State{name:"Bayern"}) return d.name
+## Start this application
+* install gradle
+* go to the root of this directory
+* gradle build
+* go to build/libs
+* do java -jar geographicalHierarchy-0.0.1-SNAPSHOT.jar
+* got to http://localhost:8080/ to initialize db
+* go to your neo4j browser for furhter information
   
-### Get all communities within rural district 'Traunstein'
-       
-  MATCH (c:Community)-[:BELONGS_TO]->(:RuralDistrict{name:"Traunstein"}) RETURN c.name
-  
-### Is there a unit called "Tutzing"? Where is it located within the hierarchy?
- 
-  MATCH path=(n)-[:BELONGS_TO*1..]->(:State{name:"Bayern"}) 
-   WHERE n.name = "Tutzing"
-   RETURN extract(node in nodes(path) | node.name)
-   
  ## Links
  * https://de.wikipedia.org/wiki/Land_%28Deutschland%29
  * https://de.wikipedia.org/wiki/Liste_der_Kreiszugeh%C3%B6rigkeit_bayerischer_Gemeinden

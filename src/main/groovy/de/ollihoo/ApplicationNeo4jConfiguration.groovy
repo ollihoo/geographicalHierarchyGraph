@@ -15,7 +15,7 @@ import org.springframework.data.neo4j.server.RemoteServer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableNeo4jRepositories(basePackages = "de.ollihoo.neo4j.repository")
+@EnableNeo4jRepositories(basePackages = "de.ollihoo.repository")
 @EnableTransactionManagement
 @ConfigurationProperties
 class ApplicationNeo4jConfiguration extends Neo4jConfiguration {
