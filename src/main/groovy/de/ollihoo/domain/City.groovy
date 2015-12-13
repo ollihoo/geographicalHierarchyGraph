@@ -7,4 +7,9 @@ import org.neo4j.ogm.annotation.NodeEntity
 class City {
     @GraphId Long id
     String name
+    String district // Ortsteil
+    String sector // Bezirk
+    String zip
+    String street
+    String housenumber
 }

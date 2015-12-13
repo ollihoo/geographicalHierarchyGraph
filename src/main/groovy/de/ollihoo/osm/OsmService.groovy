@@ -6,22 +6,27 @@ import org.springframework.stereotype.Service
 
 @Service
 class OsmService {
-
     private BASE_URL = "http://nominatim.openstreetmap.org/search.php?format=json"
+
+    OsmNameResolver osmNameResolver
 
     PointOfInterest getPointOfInterestByRequest(String name) {
         def requestEntry = name? URLEncoder.encode(name, "utf-8"):""
         def url = new URL("$BASE_URL&q=$requestEntry")
         def result = new JsonSlurper().parse(url)
         if (result != []) {
+            String combinedName = result.display_name[0]
             new PointOfInterest(
-                    name: result.display_name[0],
+                    name: osmNameResolver.parsePoiName(combinedName),
                     lat: new BigDecimal(result.lat[0]),
                     lng: new BigDecimal(result.lon[0]),
-                    type: result.type[0]
+                    type: result.type[0],
+                    city: osmNameResolver.parseCity(combinedName)
             )
         } else {
             null
         }
     }
+
+
 }
