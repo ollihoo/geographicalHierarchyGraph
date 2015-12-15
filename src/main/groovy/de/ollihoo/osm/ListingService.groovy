@@ -2,20 +2,48 @@ package de.ollihoo.osm
 
 import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.PointOfInterestRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class ListingService {
+    private static final Logger LOG = LoggerFactory.getLogger(ListingService)
 
     @Autowired
     OsmNameResolver osmNameResolver
 
     @Autowired
+    OsmService osmService
+
+    @Autowired
     PointOfInterestRepository pointOfInterestRepository
 
-    List<PointOfInterest> parsePointOfInterests() {
-        URL url = this.class.getClassLoader().getResource("PointOfInterests.csv")
+    List<PointOfInterest> parseRawPointOfInterests(String city) {
+        if (city =~ /. , \//) {
+            return []
+        }
+        def pattern = city.toLowerCase()
+        URL url = this.class.getClassLoader().getResource("cities/$pattern/poi.csv")
+        def resultList = []
+        url.eachLine { line ->
+            def poi = osmService.getPointOfInterestByRequest("Hamburg, " + line)
+            if (poi) {
+                resultList << poi
+            } else {
+                LOG.info("NO ENTRY: $line")
+            }
+        }
+        resultList
+    }
+
+    List<PointOfInterest> parsePointOfInterestsWithCoordinates(String city) {
+        if (city =~ /. , \//) {
+            return []
+        }
+        def pattern = city.toLowerCase()
+        URL url = this.class.getClassLoader().getResource("cities/$pattern/PointOfInterests.csv")
         def rows = []
         url.text.eachLine { line -> rows << line }
         rows.collect { line ->

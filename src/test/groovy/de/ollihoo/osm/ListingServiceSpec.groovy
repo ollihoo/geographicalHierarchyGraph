@@ -3,9 +3,6 @@ package de.ollihoo.osm
 import de.ollihoo.repository.PointOfInterestRepository
 import spock.lang.Specification
 
-/**
- * Created by olli on 13.12.2015.
- */
 class ListingServiceSpec extends Specification {
 
     ListingService service = new ListingService()
@@ -17,7 +14,7 @@ class ListingServiceSpec extends Specification {
 
     def "ListingService should parse internal poi list with 210 entries" () {
         when:
-        List result = service.parsePointOfInterests()
+        List result = service.parsePointOfInterestsWithCoordinates("berlin")
 
         then:
         result.size() == 210
