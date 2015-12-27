@@ -1,8 +1,9 @@
 package de.ollihoo.domain
 
-import org.neo4j.cypher.InvalidArgumentException
+import de.ollihoo.osm.InvalidCoordinateException
+import org.neo4j.ogm.annotation.Transient
 
-
+@Transient
 class Coordinate {
     private BigDecimal RADIUS = new BigDecimal("6371")
     BigDecimal latitude

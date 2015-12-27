@@ -1,4 +1,4 @@
-package de.ollihoo.domain
+package de.ollihoo.osm
 
 class InvalidCoordinateException extends Exception {
 

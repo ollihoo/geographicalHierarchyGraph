@@ -4,10 +4,9 @@
 
 </head>
 <body>
-<h2>Types of Points of Interest</h2>
-
 <ul>
-    <li th:each="poiType : ${poiTypes}" th:text="${poiType.type +' ('+poiType.numberOfEntries+' entries)'}">classic (34 entries)</li>
+    <li th:each="poi : ${pois}" th:text="${poi.name +' ('+poi.lat+', '+poi.lng+')'}">poi (lat, lng)</li>
 </ul>
+
 </body>
 </html>

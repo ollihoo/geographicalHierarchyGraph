@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
-class IndexController {
+class TypeController {
 
     @Autowired
     PointOfInterestRepository pointOfInterestRepository
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/types", method = RequestMethod.GET)
     def index(Model model) {
         model.addAttribute("poiTypes", pointOfInterestRepository.allPoiTypes)
-        "index"
+        "type"
     }
 }
