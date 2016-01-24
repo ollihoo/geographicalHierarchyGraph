@@ -24,9 +24,33 @@ This application uses interfaces to OSM to parse data.
 * go to build/libs
 * do java -jar geographicalHierarchy-0.0.1-SNAPSHOT.jar
 * got to http://localhost:8080/ to initialize db
-* go to your neo4j browser for furhter information
+* go to your neo4j browser for further information
+
+## Start in a docker environment
+Connection to the database is done via container link. The link to the databse is 
+then given by a environment var called NEO4J_PORT_7474_TCP_ADDR. The correct adress
+to the database is set up during start. See Dockerfile for more information.
+
+This is how to start the neo4j container (all commands are done by root):
+```
+useradd -U -m neo4j
+sudo su neo4j mkdir ~/geohierarchy
+docker run -d --publish=7474:7474 --name neo4j --volume=/home/neo4j/geohierarchy:/data neo4j
+```
+
+To set credentials we need another way: create directory (i.e. /opt/geohierarchy) and put an
+application.properties file in it. This is the content (adapt data!!):
+```
+neo4j.user=neo4j
+neo4j.password=yourverysecretpassword
+```
+
+Now start the container: 
+```
+docker run -p 8080:8080 --link=neo4j --rm --volume=/opt/geohierarchy:/config --name=web ollihoo/geohierarchy
+```  
   
- ## Links
+## Links
  * https://de.wikipedia.org/wiki/Land_%28Deutschland%29
  * https://de.wikipedia.org/wiki/Liste_der_Kreiszugeh%C3%B6rigkeit_bayerischer_Gemeinden
  * https://de.wikipedia.org/wiki/Liste_der_Landkreise_und_kreisfreien_St%C3%A4dte_in_Bayern
