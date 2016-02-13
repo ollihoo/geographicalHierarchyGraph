@@ -1,6 +1,6 @@
 package de.ollihoo.domain
 
-import de.ollihoo.osm.InvalidCoordinateException
+
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll

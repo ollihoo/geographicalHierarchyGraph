@@ -20,11 +20,17 @@ class PointOfInterest {
     @Relationship(type = "LOCATED_AT", direction = Relationship.OUTGOING)
     AdministrativeUnit location
 
+    @Relationship(type = "WITH_DISTANCE", direction = Relationship.UNDIRECTED)
+    Set<PointOfInterest> pointOfInterests;
+
     Coordinate getCoordinate() {
         if (! coordinate) {
             coordinate = new Coordinate(latitude: lat, longitude: lng)
         }
         coordinate
     }
+
+
+
 
 }

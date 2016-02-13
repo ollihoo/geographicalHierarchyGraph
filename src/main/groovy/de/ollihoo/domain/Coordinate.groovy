@@ -1,6 +1,5 @@
 package de.ollihoo.domain
 
-import de.ollihoo.osm.InvalidCoordinateException
 import org.neo4j.ogm.annotation.Transient
 
 @Transient
