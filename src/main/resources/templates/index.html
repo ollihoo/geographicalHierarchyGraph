@@ -1,12 +1,15 @@
 <?doctype html?>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-
+<title>Hello</title>
 </head>
 <body>
-<ul>
-    <li th:each="poi : ${pois}" th:text="${poi.name +' ('+poi.lat+', '+poi.lng+')'}">poi (lat, lng)</li>
-</ul>
+<h2>Hello</h2>
+<table>
+    <tr th:each="poi : ${route}">
+        <td th:text="${poi.name}"></td>
+    </tr>
+</table>
 
 </body>
 </html>
