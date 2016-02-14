@@ -1,35 +1,40 @@
 package de.ollihoo.services
 
 import de.ollihoo.domain.Coordinate
+import de.ollihoo.domain.InvalidCoordinateException
+import de.ollihoo.domain.LinkedPoi
 import de.ollihoo.domain.PointOfInterest
 import org.springframework.stereotype.Service
 
 @Service
 class RoundTripService {
 
-    def List<PointOfInterest> getRoundTripRoute(Coordinate currentPosition, List<PointOfInterest> pointOfInterests) {
+    def LinkedPoi getRoundTripRoute(PointOfInterest currentPosition, List<PointOfInterest> pointOfInterests) {
         if (! currentPosition) {
-            return []
+            throw new InvalidCoordinateException("currentPosition is invalid")
         }
-        def resultList = []
-        def remainingPois = pointOfInterests.collect { it }
+        LinkedPoi startPoi = new LinkedPoi(currentPosition)
+        def remainingPois = pointOfInterests.collect { new LinkedPoi(it) }
+        LinkedPoi currentPoi = startPoi
         while (! remainingPois.empty) {
-            resultList << getNextNearestPoi(currentPosition, remainingPois)
+            def nextPoi = getNextNearestPoi(currentPosition.coordinate, remainingPois)
+            currentPoi.nextPoi = nextPoi
+            currentPoi = nextPoi
         }
-        resultList
+        startPoi
     }
 
-    private PointOfInterest getNextNearestPoi(Coordinate currentPosition, List<PointOfInterest> operationalList) {
+    private LinkedPoi getNextNearestPoi(Coordinate currentPosition, List<LinkedPoi> operationalList) {
         def lastPosition = findNearestPoi(currentPosition, operationalList)
         operationalList.remove(lastPosition)
         lastPosition
     }
 
-    private PointOfInterest findNearestPoi(Coordinate currentPosition, List<PointOfInterest> pois) {
+    private LinkedPoi findNearestPoi(Coordinate currentPosition, List<LinkedPoi> pois) {
         def nearestPoi
         def shortestDistance
-        pois.collect { PointOfInterest poi ->
-            def dist = currentPosition.getDistanceInKm(poi.coordinate)
+        pois.collect { LinkedPoi poi ->
+            def dist = currentPosition.getDistanceInKm(poi.poi.coordinate)
             if (!shortestDistance || shortestDistance > dist) {
                 nearestPoi = poi
                 shortestDistance = dist

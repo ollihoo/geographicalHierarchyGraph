@@ -22,9 +22,9 @@ class AttractionRoundTripController {
 
     @RequestMapping(value="/", method=RequestMethod.GET)
     String index(Model model) {
-        def pointOfInterests = pointOfInterestRepository.getPoisInCityOfType("Hamburg", "attraction")
-        def currentPosition = new Coordinate(latitude: 52.541813, longitude:  13.354431)
-        def route = roundTripService.getRoundTripRoute(currentPosition, pointOfInterests)
+        def pointOfInterests = pointOfInterestRepository.getPoisInCityOfType("Berlin", "attraction")
+        PointOfInterest personalStartPoint = new PointOfInterest(name: "YOUR START POINT", lat:  52.541813, lng: 13.354431)
+        def route = roundTripService.getRoundTripRoute(personalStartPoint, pointOfInterests)
         model.addAttribute("route", route)
         "index"
     }
