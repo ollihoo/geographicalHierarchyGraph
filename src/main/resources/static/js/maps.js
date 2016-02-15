@@ -6,16 +6,3 @@ function initMap() {
         zoom: 12
     });
 }
-
-function useCurrentPosition(position) {
-    currentPosition.lat = position.coords.latitude;
-    currentPosition.lng = position.coords.longitude;
-
-    if (map) {
-        map.setCenter(currentPosition);
-    }
-}
-
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(useCurrentPosition);
-}

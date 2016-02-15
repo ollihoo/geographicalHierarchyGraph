@@ -3,11 +3,16 @@
 <head>
     <title>Hello</title>
     <link rel="stylesheet" href="/css/mystyle.css" />
+    <script src="/js/react/react.js"></script>
+    <script src="/js/react/react-dom.js"></script>
+    <script src="/js/react/browser.min.js"></script>
+
 </head>
 <body>
-    <div id="map">
-    </div>
+    <div id="map"></div>
+    <div id="communications"></div>
     <script src="/js/maps.js"></script>
+    <script type="text/babel" src="/js/communications.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmb2oSlIdPPBhz__k97CNvON6IZADhIkY&amp;callback=initMap" async="async" defer="defer"></script>
 </body>
 </html>
