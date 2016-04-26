@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
-class IndexControlloer {
+class IndexController {
 
     @RequestMapping(value="/", method = RequestMethod.GET)
     String index() {

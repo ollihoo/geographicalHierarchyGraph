@@ -22,8 +22,10 @@ class AttractionRoundTripController {
     PointOfInterestRepository pointOfInterestRepository
 
     @RequestMapping(value = "/roundtrip", method = RequestMethod.GET)
-    LinkedPoi index(@RequestBody RoundtripCommand command,
+    LinkedPoi index(@RequestParam(value = "lat", required = false) String lat,
+                    @RequestParam(value = "lng", required = false) String lng,
                     Model model) {
+        RoundtripCommand command = new RoundtripCommand(lat: lat, lng: lng)
         PointOfInterest personalStartPoint = (command)?
                 new PointOfInterest(name: "YOUR START POINT", lat: command.latitude, lng: command.longitude):
                 new PointOfInterest(name: "YOUR START POINT", lat: 52.541813, lng: 13.354431)
