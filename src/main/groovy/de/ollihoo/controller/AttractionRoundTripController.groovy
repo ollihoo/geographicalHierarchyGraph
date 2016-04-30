@@ -29,9 +29,11 @@ class AttractionRoundTripController {
         PointOfInterest personalStartPoint = (command)?
                 new PointOfInterest(name: "YOUR START POINT", lat: command.latitude, lng: command.longitude):
                 new PointOfInterest(name: "YOUR START POINT", lat: 52.541813, lng: 13.354431)
+//        System.out.println("Request to Roundtrip Controller");
         def pointOfInterests = pointOfInterestRepository.getPoisInCityOfType("Berlin", "attraction")
         roundTripService.getRoundTripRoute(personalStartPoint, pointOfInterests)
     }
 
+    def help( ) {}
 
 }
