@@ -8,6 +8,7 @@ It is also intended to test which queries you can do on this data.
 For legal issues:
 Daten von <a href="http://www.openstreetmap.org/">OpenStreetMap</a> - 
 Veröffentlicht unter <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>
+* interesting side for toruistic infromation: http://tour-pedia.org/about/
 
 This application uses interfaces to OSM to parse data.
 
