@@ -1,9 +1,12 @@
-package de.ollihoo.repository
+package de.ollihoo.repository;
 
-import de.ollihoo.domain.PoiType
-import de.ollihoo.domain.PointOfInterest
-import org.springframework.data.neo4j.annotation.Query
-import org.springframework.data.neo4j.repository.GraphRepository
+import de.ollihoo.domain.PoiType;
+import de.ollihoo.domain.PointOfInterest;
+import org.springframework.data.neo4j.annotation.Query;
+import org.springframework.data.neo4j.repository.GraphRepository;
+
+import java.util.List;
+import java.util.Set;
 
 public interface PointOfInterestRepository extends GraphRepository<PointOfInterest> {
     PointOfInterest findByName(String name);

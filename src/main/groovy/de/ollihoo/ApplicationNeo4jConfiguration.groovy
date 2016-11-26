@@ -1,27 +1,20 @@
 package de.ollihoo
 
-import org.neo4j.ogm.session.Session
 import org.neo4j.ogm.session.SessionFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Scope
-import org.springframework.context.annotation.ScopedProxyMode
+import org.springframework.context.annotation.*
 import org.springframework.data.neo4j.config.Neo4jConfiguration
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories
-import org.springframework.data.neo4j.server.Neo4jServer
-import org.springframework.data.neo4j.server.RemoteServer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-@EnableNeo4jRepositories(basePackages = "de.ollihoo.repository")
 @EnableTransactionManagement
-@ConfigurationProperties
+@ComponentScan("de.ollihoo.domain")
+@EnableNeo4jRepositories(basePackages = "de.ollihoo.repository")
 class ApplicationNeo4jConfiguration extends Neo4jConfiguration {
 
-    @Value('${neo4j.serverUrl}')
-    private String neo4jServerUrl
+    @Value('${neo4j.host}')
+    private String neo4jHost
 
     @Value('${neo4j.user}')
     private String neo4jUser
@@ -29,19 +22,14 @@ class ApplicationNeo4jConfiguration extends Neo4jConfiguration {
     @Value('${neo4j.password}')
     private String neo4jPassword
 
-    @Override @Bean
-    Neo4jServer neo4jServer() {
-        new RemoteServer(neo4jServerUrl, neo4jUser, neo4jPassword)
-    }
-
-    @Override @Bean
+    @Override
     SessionFactory getSessionFactory() {
-        new SessionFactory("de.ollihoo.domain")
-    }
 
-    @Bean
-    @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public Session getSession() throws Exception {
-        return super.getSession();
+        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
+        configuration.driverConfiguration()
+                .setDriverClassName("org.neo4j.ogm.drivers.bolt.driver.BoltDriver")
+                .setURI("bolt://${neo4jUser}:${neo4jPassword}@${neo4jHost}")
+                .setEncryptionLevel("NONE")
+        new SessionFactory(configuration, "org.ollihoo.domain")
     }
 }

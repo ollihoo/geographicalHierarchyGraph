@@ -1,22 +1,24 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         maven { url "http://repo.spring.io/snapshot" }
         maven { url "http://repo.spring.io/milestone" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE")
-        classpath('se.transmode.gradle:gradle-docker:1.2')
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
-apply plugin: 'docker'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 version = '1.0'
+def springBootVersion = '1.4.2.RELEASE'
+def boltVersion = '2.0.5'
 group = 'ollihoo'
 
 repositories {
@@ -30,27 +32,23 @@ jar {
     version = '0.0.1-SNAPSHOT'
 }
 
-task buildDocker(type: Docker, dependsOn: build) {
-    push = false
-    applicationName = jar.baseName
-    dockerfile = file('src/main/docker/Dockerfile')
-    doFirst {
-        copy {
-            from jar
-            into stageDir
-        }
-    }
-}
-
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter:1.3.3.RELEASE")
-    compile("org.springframework.boot:spring-boot-starter-web:1.3.3.RELEASE")
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf:1.3.3.RELEASE")
-    compile("org.springframework.data:spring-data-neo4j:4.0.0.RELEASE")
+    compile('org.codehaus.groovy:groovy-all:2.4.7')
+    compile("org.springframework.boot:spring-boot-starter:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf:$springBootVersion")
+    compile("org.springframework.data:spring-data-neo4j:4.1.5.RELEASE")
+    compile("org.neo4j:neo4j-ogm-api:$boltVersion")
+    compile("org.neo4j:neo4j-ogm-core:$boltVersion")
+    compile("org.neo4j:neo4j-ogm-http-driver:$boltVersion")
+    compile("org.neo4j:neo4j-ogm-embedded-driver:$boltVersion")
+    compile("org.neo4j:neo4j-ogm-bolt-driver:$boltVersion")
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'org.codehaus.groovy:groovy-all:2.4.4'
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
-    testCompile('cglib:cglib-nodep:3.2.0')
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testCompile("org.springframework.boot:spring-boot-test-autoconfigure:${springBootVersion}")
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4-rc-3')
+    testCompile('cglib:cglib-nodep:3.2.4')
 }
 
 task wrapper(type: Wrapper) {
