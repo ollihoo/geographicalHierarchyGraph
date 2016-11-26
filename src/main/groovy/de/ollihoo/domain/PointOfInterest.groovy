@@ -13,6 +13,7 @@ class PointOfInterest {
     String type
     BigDecimal lat
     BigDecimal lng
+    String referenceId
 
     @Transient
     private Coordinate coordinate
