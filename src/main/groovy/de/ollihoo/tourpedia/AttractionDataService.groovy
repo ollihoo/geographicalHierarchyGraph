@@ -3,6 +3,7 @@ package de.ollihoo.tourpedia
 import de.ollihoo.domain.Address
 import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
+import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -13,6 +14,9 @@ class AttractionDataService {
 
     @Autowired
     private CityRepository cityRepository
+
+    @Autowired
+    private AddressRepository addressRepository
 
     List<PointOfInterest> getAttractionsForAmsterdam() {
 
@@ -35,7 +39,13 @@ class AttractionDataService {
 
     private Address getOrCreateAddress(City city, entry) {
         String trimmedAddress = removeUnexpectedEntriesFromStreet(entry.address)
-        trimmedAddress ? new Address(street: trimmedAddress, zip: "", location: city) : null
+        if (trimmedAddress) {
+            Address existingAddress = addressRepository.findByStreetAndLocation(trimmedAddress, city)
+            return existingAddress?:
+                    addressRepository.save(new Address(street: trimmedAddress, zip: "", location: city), 1)
+        } else {
+            return null
+        }
     }
 
     private removeUnexpectedEntriesFromStreet(String input) {

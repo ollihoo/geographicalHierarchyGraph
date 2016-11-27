@@ -42,7 +42,7 @@ var LoadCurrentPosition = React.createClass({
                        position: { lat: poi.lat, lng: poi.lng } //,
                        //title: poi.name
                     }),
-      contentString = "<h3>"+poi.name+"</h3><p>This is a trial</p>",
+      contentString = "<h3>"+poi.name+"</h3><p>This is another important trial</p>",
       infowindow = new google.maps.InfoWindow({
                        content: contentString
       });
