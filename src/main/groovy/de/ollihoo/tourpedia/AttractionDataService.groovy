@@ -18,20 +18,13 @@ class AttractionDataService {
 
         def json = tourpediaService.getJsonResponseFor("Amsterdam", "attraction")
 
-        def amsterdam = getOrCreateCity("Amsterdam")
+        City amsterdam = getOrCreateCity("Amsterdam")
 
         json.collect { entry ->
-            def address = null
-            if (entry.address) {
-                String trimmedAddress = removeUnexpectedEntriesFromStreet(entry.address)
-                address = trimmedAddress ?
-                    address = new Address(street: trimmedAddress, zip: "", location: amsterdam): amsterdam
-            } else {
-                address = amsterdam
-            }
+            Address address = getOrCreateAddress(amsterdam, entry)
 
             new PointOfInterest(name: entry.name, type: entry.category, lat: entry.lat, lng: entry.lng,
-                    location: address, referenceId: "tourpedia#" + entry.id
+                    location: address?:amsterdam, referenceId: "tourpedia#" + entry.id
             )
         }
     }
@@ -40,8 +33,16 @@ class AttractionDataService {
         cityRepository.findByName(cityName)?: cityRepository.save(new City(name: cityName), 1)
     }
 
+    private Address getOrCreateAddress(City city, entry) {
+        String trimmedAddress = removeUnexpectedEntriesFromStreet(entry.address)
+        trimmedAddress ? new Address(street: trimmedAddress, zip: "", location: city) : null
+    }
+
     private removeUnexpectedEntriesFromStreet(String input) {
-        input.replaceAll(", Amsterdam", "").replaceAll(/,? *Netherlands/, "")
+        if (input) {
+            return input.replaceAll(", Amsterdam", "").replaceAll(/,? *Netherlands/, "")
+        }
+        null
     }
 
 }
