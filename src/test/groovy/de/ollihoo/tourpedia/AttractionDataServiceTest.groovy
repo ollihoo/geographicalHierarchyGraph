@@ -93,7 +93,7 @@ class AttractionDataServiceTest extends Specification {
     }
 
     private boolean isCityOfAmsterdam(AdministrativeUnit location) {
-        location == AMSTERDAM //instanceof City && location.name == "Amsterdam"
+        location == AMSTERDAM
     }
 
 

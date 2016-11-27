@@ -37,11 +37,7 @@ class AttractionDataService {
     }
 
     private City getOrCreateCity(String cityName) {
-        def city = cityRepository.findByName(cityName)
-        if (! city) {
-            city = cityRepository.save(new City(name: cityName), 1)
-        }
-        city
+        cityRepository.findByName(cityName)?: cityRepository.save(new City(name: cityName), 1)
     }
 
     private removeUnexpectedEntriesFromStreet(String input) {
