@@ -18,11 +18,11 @@ class AttractionDataServiceTest extends Specification {
         cityRepository = Mock(CityRepository)
         service = new AttractionDataService(tourpediaService: tourpediaService, cityRepository: cityRepository)
 
-        tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> createJsonRepsonse()
-        cityRepository.save(_,_) >> AMSTERDAM
+        tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> TOURPEDIA_JSON_RESPONSE
+        cityRepository.save(_, _) >> AMSTERDAM
     }
 
-    def "when Amsterdam is unknown, save it to the database" () {
+    def "When Amsterdam is unknown, save it to the database"() {
         def usedCity = null
         when:
         service.attractionsForAmsterdam
@@ -30,12 +30,12 @@ class AttractionDataServiceTest extends Specification {
         then:
         1 * cityRepository.findByName("Amsterdam") >> null
         1 * cityRepository.save(_, 1) >> { parameters ->
-            usedCity = parameters[0].name == "Amsterdam" ? AMSTERDAM: null
+            usedCity = parameters[0].name == "Amsterdam" ? AMSTERDAM : null
         }
         usedCity == AMSTERDAM
     }
 
-    def "when Amsterdam is known, return it without saving" () {
+    def "When Amsterdam is known, return it without saving"() {
         when:
         service.attractionsForAmsterdam
 
@@ -45,32 +45,39 @@ class AttractionDataServiceTest extends Specification {
     }
 
 
-    def "get point of interests from tourpediaService" () {
+    def "Get point of interests from tourpediaService"() {
         when:
         service.attractionsForAmsterdam
 
         then:
-        1 * tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> createJsonRepsonse()
+        1 * tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> TOURPEDIA_JSON_RESPONSE
     }
 
-    def "response delivers expected number of elements" () {
+    def "Method parses all given elements"() {
         when:
         def response = service.attractionsForAmsterdam
 
         then:
-        response.size() == 4
+        response.size() == TOURPEDIA_JSON_RESPONSE.size()
     }
 
-    def "response delivers correct address" () {
+    def "When no street is given, response has city as location"() {
         when:
         def response = service.attractionsForAmsterdam
 
         then:
         isCityOfAmsterdam response[0].location
+    }
+
+    def "When street is given, response has address as location"() {
+        when:
+        def response = service.attractionsForAmsterdam
+
+        then:
         isAmsterdamWithStreet(response[1].location, "Van Kinsbergenstraat 6")
     }
 
-    def "POI contains original ID" () {
+    def "When POI is found, it saves the original ID from tourpedia"() {
         when:
         def response = service.attractionsForAmsterdam
 
@@ -78,7 +85,7 @@ class AttractionDataServiceTest extends Specification {
         response[0].referenceId == "tourpedia#33985"
     }
 
-    def "Amsterdam, Netherlands is cut out of the street entry" () {
+    def "When 'Amsterdam, Netherlands' is in street name, remove it"() {
         when:
         def responses = service.attractionsForAmsterdam
 
@@ -96,24 +103,31 @@ class AttractionDataServiceTest extends Specification {
         location == AMSTERDAM
     }
 
-
-    private  createJsonRepsonse() {
-        [[address: null, category:"attraction", details:"http://tour-pedia.org/api/getPlaceDetails?id=33985",
-          id:33985, lat:52.377262574894, lng:4.8580104817941, location:"Amsterdam", name:"Thenextweb",
-          numReviews:1, originalId:"5178d2aee4b0d969ecd65d3f", polarity:5,
-          reviews:"http://tour-pedia.org/api/getReviewsByPlaceId?placeId=33985", subCategory:"Auditorium"],
-         [address:"Van Kinsbergenstraat 6", category:"attraction", details:"http://tour-pedia.org/api/getPlaceDetails?id=33989",
-          id:33989, lat:52.368381396984, lng:4.8630453502768, location:"Amsterdam", name:"SGI Amsterdam Cultural Centre",
-          numReviews:3, originalId:"4e8c99878b81e678900e7744", polarity:7,
-          reviews:"http://tour-pedia.org/api/getReviewsByPlaceId?placeId=33989", subCategory:"Spiritual Center"],
-        [address:"Eva Besnyöstraat 289, Amsterdam, Netherlands", category:"attraction", details:"http://tour-pedia.org/api/getPlaceDetails?id=243966",
-         id:243966, lat:52.351137, lng:5.005955, location:"Amsterdam", name:"freelance dee jay",
-         numReviews:3, originalId:"4e8c99878b81900e7744", polarity:3,
-         reviews:"http://tour-pedia.org/api/getReviewsByPlaceId?placeId=243966", subCategory:"Spiritual Center"],
-         [address:"Netherlands", category:"attraction", details:"http://tour-pedia.org/api/getPlaceDetails?id=243966",
-          id:243966, lat:52.351137, lng:5.005955, location:"Amsterdam", name:"freelance dee jay",
-          numReviews:3, originalId:"4e8c99878b81900e7744", polarity:3,
-          reviews:"http://tour-pedia.org/api/getReviewsByPlaceId?placeId=243966", subCategory:"Spiritual Center"]]
-    }
+    private TOURPEDIA_JSON_RESPONSE =
+            [[address    : null, category: "attraction", details: "http://tour-pedia.org/api/getPlaceDetails?id=33985",
+              id         : 33985, lat: 52.377262574894, lng: 4.8580104817941,
+              location   : "Amsterdam", name: "Thenextweb",
+              numReviews : 1, originalId: "5178d2aee4b0d969ecd65d3f", polarity: 5,
+              reviews    : "http://tour-pedia.org/api/getReviewsByPlaceId?placeId=33985",
+              subCategory: "Auditorium"],
+             [address    : "Van Kinsbergenstraat 6", category: "attraction",
+              details    : "http://tour-pedia.org/api/getPlaceDetails?id=33989",
+              id         : 33989, lat: 52.368381396984, lng: 4.8630453502768, location: "Amsterdam",
+              name       : "SGI Amsterdam Cultural Centre",
+              numReviews : 3, originalId: "4e8c99878b81e678900e7744", polarity: 7,
+              reviews    : "http://tour-pedia.org/api/getReviewsByPlaceId?placeId=33989",
+              subCategory: "Spiritual Center"],
+             [address    : "Eva Besnyöstraat 289, Amsterdam, Netherlands", category: "attraction",
+              details    : "http://tour-pedia.org/api/getPlaceDetails?id=243966",
+              id         : 243966, lat: 52.351137, lng: 5.005955, location: "Amsterdam", name: "freelance dee jay",
+              numReviews : 3, originalId: "4e8c99878b81900e7744", polarity: 3,
+              reviews    : "http://tour-pedia.org/api/getReviewsByPlaceId?placeId=243966",
+              subCategory: "Spiritual Center"],
+             [address    : "Netherlands", category: "attraction",
+              details    : "http://tour-pedia.org/api/getPlaceDetails?id=243966",
+              id         : 243966, lat: 52.351137, lng: 5.005955, location: "Amsterdam", name: "freelance dee jay",
+              numReviews : 3, originalId: "4e8c99878b81900e7744", polarity: 3,
+              reviews    : "http://tour-pedia.org/api/getReviewsByPlaceId?placeId=243966",
+              subCategory: "Spiritual Center"]]
 
 }
