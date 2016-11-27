@@ -3,6 +3,7 @@ package de.ollihoo.tourpedia
 import de.ollihoo.domain.Address
 import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
+import de.ollihoo.repository.CityRepository
 import org.springframework.beans.factory.annotation.Autowired
 
 class AttractionDataService {
@@ -10,11 +11,14 @@ class AttractionDataService {
     @Autowired
     private TourpediaService tourpediaService
 
-    List<PointOfInterest> getAttractions() {
+    @Autowired
+    private CityRepository cityRepository
+
+    List<PointOfInterest> getAttractionsForAmsterdam() {
 
         def json = tourpediaService.getJsonResponseFor("Amsterdam", "attraction")
 
-        def amsterdam = new City(name: "Amsterdam")
+        def amsterdam = getOrCreateCity("Amsterdam")
 
         json.collect { entry ->
             def address = null
@@ -30,6 +34,14 @@ class AttractionDataService {
                     location: address, referenceId: "tourpedia#" + entry.id
             )
         }
+    }
+
+    private City getOrCreateCity(String cityName) {
+        def city = cityRepository.findByName(cityName)
+        if (! city) {
+            city = cityRepository.save(new City(name: cityName), 1)
+        }
+        city
     }
 
     private removeUnexpectedEntriesFromStreet(String input) {

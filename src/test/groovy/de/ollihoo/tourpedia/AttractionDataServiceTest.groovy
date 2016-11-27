@@ -3,25 +3,51 @@ package de.ollihoo.tourpedia
 import de.ollihoo.domain.Address
 import de.ollihoo.domain.AdministrativeUnit
 import de.ollihoo.domain.City
+import de.ollihoo.repository.CityRepository
 import spock.lang.Specification
 
-
 class AttractionDataServiceTest extends Specification {
+    private static final City AMSTERDAM = new City(name: "Amsterdam")
 
     private TourpediaService tourpediaService
+    private CityRepository cityRepository
     private AttractionDataService service
 
     def setup() {
         tourpediaService = Mock(TourpediaService)
-        service = new AttractionDataService(tourpediaService: tourpediaService)
+        cityRepository = Mock(CityRepository)
+        service = new AttractionDataService(tourpediaService: tourpediaService, cityRepository: cityRepository)
 
         tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> createJsonRepsonse()
+        cityRepository.save(_,_) >> AMSTERDAM
+    }
+
+    def "when Amsterdam is unknown, save it to the database" () {
+        def usedCity = null
+        when:
+        service.attractionsForAmsterdam
+
+        then:
+        1 * cityRepository.findByName("Amsterdam") >> null
+        1 * cityRepository.save(_, 1) >> { parameters ->
+            usedCity = parameters[0].name == "Amsterdam" ? AMSTERDAM: null
+        }
+        usedCity == AMSTERDAM
+    }
+
+    def "when Amsterdam is known, return it without saving" () {
+        when:
+        service.attractionsForAmsterdam
+
+        then:
+        1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
+        0 * cityRepository.save(_, _)
     }
 
 
     def "get point of interests from tourpediaService" () {
         when:
-        service.attractions
+        service.attractionsForAmsterdam
 
         then:
         1 * tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> createJsonRepsonse()
@@ -29,7 +55,7 @@ class AttractionDataServiceTest extends Specification {
 
     def "response delivers expected number of elements" () {
         when:
-        def response = service.attractions
+        def response = service.attractionsForAmsterdam
 
         then:
         response.size() == 4
@@ -37,7 +63,7 @@ class AttractionDataServiceTest extends Specification {
 
     def "response delivers correct address" () {
         when:
-        def response = service.attractions
+        def response = service.attractionsForAmsterdam
 
         then:
         isCityOfAmsterdam response[0].location
@@ -46,7 +72,7 @@ class AttractionDataServiceTest extends Specification {
 
     def "POI contains original ID" () {
         when:
-        def response = service.attractions
+        def response = service.attractionsForAmsterdam
 
         then:
         response[0].referenceId == "tourpedia#33985"
@@ -54,7 +80,7 @@ class AttractionDataServiceTest extends Specification {
 
     def "Amsterdam, Netherlands is cut out of the street entry" () {
         when:
-        def responses = service.attractions
+        def responses = service.attractionsForAmsterdam
 
         then:
         responses[2].location.street == "Eva Besnyöstraat 289"
@@ -67,7 +93,7 @@ class AttractionDataServiceTest extends Specification {
     }
 
     private boolean isCityOfAmsterdam(AdministrativeUnit location) {
-        location instanceof City && location.name == "Amsterdam"
+        location == AMSTERDAM //instanceof City && location.name == "Amsterdam"
     }
 
 
