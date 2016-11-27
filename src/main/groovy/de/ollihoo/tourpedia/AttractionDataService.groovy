@@ -28,24 +28,23 @@ class AttractionDataService {
             Address address = getOrCreateAddress(amsterdam, entry)
 
             new PointOfInterest(name: entry.name, type: entry.category, lat: entry.lat, lng: entry.lng,
-                    location: address?:amsterdam, referenceId: "tourpedia#" + entry.id
+                    location: address ?: amsterdam, referenceId: "tourpedia#" + entry.id
             )
         }
     }
 
     private City getOrCreateCity(String cityName) {
-        cityRepository.findByName(cityName)?: cityRepository.save(new City(name: cityName), 1)
+        cityRepository.findByName(cityName) ?: cityRepository.save(new City(name: cityName), 1)
     }
 
     private Address getOrCreateAddress(City city, entry) {
         String trimmedAddress = removeUnexpectedEntriesFromStreet(entry.address)
         if (trimmedAddress) {
             Address existingAddress = addressRepository.findByStreetAndLocation(trimmedAddress, city)
-            return existingAddress?:
+            return existingAddress ?:
                     addressRepository.save(new Address(street: trimmedAddress, zip: "", location: city), 1)
-        } else {
-            return null
         }
+        null
     }
 
     private removeUnexpectedEntriesFromStreet(String input) {
