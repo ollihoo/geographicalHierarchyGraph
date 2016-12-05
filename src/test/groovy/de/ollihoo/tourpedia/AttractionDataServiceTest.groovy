@@ -1,5 +1,6 @@
 package de.ollihoo.tourpedia
 
+import de.ollihoo.domain.Address
 import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
@@ -78,6 +79,41 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
     foundPoi.lat == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lat
     foundPoi.lng == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lng
     foundPoi.location == AMSTERDAM
+  }
+
+  def "When POI without address already exists, it is updated" () {
+    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
+    PointOfInterest foundPoi = createFakePointOfInterest()
+
+    when:
+    service.attractionsForAmsterdam
+
+    then:
+    1 * pointOfInterestRepository.findByName(TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name) >> foundPoi
+    1 * pointOfInterestRepository.save(foundPoi, 1)
+    foundPoi.id == ANY_POI_ID
+    foundPoi.name == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name
+    foundPoi.type == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.category
+    foundPoi.lat == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lat
+    foundPoi.lng == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lng
+    foundPoi.location == AMSTERDAM
+    foundPoi.referenceId == "tourpedia#" + TOURPEDIA_ENTRY_WITHOUT_ADDRESS.id
+  }
+
+  def "When POI with address already exists, it is updated" () {
+    PointOfInterest foundPoi = createFakePointOfInterest()
+    Address foundAddress = new Address()
+    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
+    addressRepository.findByStreetAndLocation(_,_) >> foundAddress
+
+    when:
+    service.attractionsForAmsterdam
+
+    then:
+    1 * pointOfInterestRepository.findByName(TOURPEDIA_ENTRY_WITH_ADDRESS.name) >> foundPoi
+    1 * pointOfInterestRepository.save(foundPoi, 1)
+    foundPoi.id == ANY_POI_ID
+    foundPoi.location == foundAddress
   }
 
 

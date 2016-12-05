@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 class AttractionDataService {
 
+    public static final String TOURPEDIA_PREFIX = "tourpedia#"
     @Autowired
     private TourpediaService tourpediaService
 
@@ -38,11 +39,12 @@ class AttractionDataService {
                 poi.type = entry.category
                 poi.lat = entry.lat
                 poi.lng = entry.lng
-                poi.location = amsterdam
+                poi.location = address?:amsterdam
+                poi.referenceId = TOURPEDIA_PREFIX+entry.id+""
                 pointOfInterestRepository.save(poi, 1)
             } else {
                 pointOfInterestRepository.save(new PointOfInterest(name: entry.name, type: entry.category, lat: entry.lat, lng: entry.lng,
-                    location: address ?: amsterdam, referenceId: "tourpedia#" + entry.id
+                    location: address ?: amsterdam, referenceId: TOURPEDIA_PREFIX + entry.id
                 ), 1)
             }
 
