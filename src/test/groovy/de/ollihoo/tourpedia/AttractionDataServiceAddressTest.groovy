@@ -1,11 +1,8 @@
 package de.ollihoo.tourpedia
 
 import de.ollihoo.domain.Address
-import de.ollihoo.domain.AdministrativeUnit
-import de.ollihoo.domain.City
 import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
-import spock.lang.Specification
 
 class AttractionDataServiceAddressTest extends AttractionDataServiceTestBase {
   private static

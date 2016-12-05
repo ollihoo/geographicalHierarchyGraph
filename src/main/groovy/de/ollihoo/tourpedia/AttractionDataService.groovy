@@ -5,6 +5,7 @@ import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
+import de.ollihoo.repository.PointOfInterestRepository
 import org.springframework.beans.factory.annotation.Autowired
 
 class AttractionDataService {
@@ -18,6 +19,10 @@ class AttractionDataService {
     @Autowired
     private AddressRepository addressRepository
 
+    @Autowired
+    PointOfInterestRepository pointOfInterestRepository
+
+
     List<PointOfInterest> getAttractionsForAmsterdam() {
 
         def json = tourpediaService.getJsonResponseFor("Amsterdam", "attraction")
@@ -27,9 +32,20 @@ class AttractionDataService {
         json.collect { entry ->
             Address address = getOrCreateAddress(amsterdam, entry)
 
-            new PointOfInterest(name: entry.name, type: entry.category, lat: entry.lat, lng: entry.lng,
+            PointOfInterest poi = pointOfInterestRepository.findByName(entry.name)
+            if (poi) {
+                poi.name = entry.name
+                poi.type = entry.category
+                poi.lat = entry.lat
+                poi.lng = entry.lng
+                poi.location = amsterdam
+                pointOfInterestRepository.save(poi, 1)
+            } else {
+                pointOfInterestRepository.save(new PointOfInterest(name: entry.name, type: entry.category, lat: entry.lat, lng: entry.lng,
                     location: address ?: amsterdam, referenceId: "tourpedia#" + entry.id
-            )
+                ), 1)
+            }
+
         }
     }
 
