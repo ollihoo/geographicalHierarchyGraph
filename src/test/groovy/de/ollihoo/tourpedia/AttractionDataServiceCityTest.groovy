@@ -3,12 +3,7 @@ package de.ollihoo.tourpedia
 import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
 
-class AttractionDataServiceTest extends AttractionDataServiceTestBase {
-  private static TOURPEDIA_JSON_RESPONSE =
-      [TOURPEDIA_ENTRY_WITHOUT_ADDRESS, TOURPEDIA_ENTRY_WITH_ADDRESS,
-       TOURPEDIA_ENTRY_WITH_CITY_COUNTRY_IN_ADDRESS, TOURPEDIA_ENTRY_WITH_NETHERLANDS_AS_ADDRESS]
-
-
+class AttractionDataServiceCityTest extends AttractionDataServiceTestBase {
   private TourpediaService tourpediaService
   private CityRepository cityRepository
   private AddressRepository addressRepository
@@ -26,31 +21,35 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
     cityRepository.save(_, _) >> AMSTERDAM
   }
 
-  def "Get point of interests from tourpediaService"() {
+  def "When Amsterdam is unknown, save it to the database"() {
+    def usedCity = null
     when:
     service.attractionsForAmsterdam
 
     then:
-    1 * tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> TOURPEDIA_JSON_RESPONSE
+    1 * cityRepository.findByName("Amsterdam") >> null
+    1 * cityRepository.save(_, 1) >> { parameters ->
+      usedCity = parameters[0].name == "Amsterdam" ? AMSTERDAM : null
+    }
+    usedCity == AMSTERDAM
   }
 
-  def "Method parses all given elements"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> TOURPEDIA_JSON_RESPONSE
+  def "When Amsterdam is known, return it without saving"() {
     when:
-    def response = service.attractionsForAmsterdam
+    service.attractionsForAmsterdam
 
     then:
-    response.size() == TOURPEDIA_JSON_RESPONSE.size()
+    1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
+    0 * cityRepository.save(_, _)
   }
 
-  def "When POI is found, it saves the original ID from tourpedia"() {
+  def "When no street is given, response has city as location"() {
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
-
     when:
     def response = service.attractionsForAmsterdam
 
     then:
-    response[0].referenceId == "tourpedia#33985"
+    isCityOfAmsterdam response[0].location
   }
 
 }
