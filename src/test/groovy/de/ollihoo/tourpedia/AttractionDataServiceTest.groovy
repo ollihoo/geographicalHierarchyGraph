@@ -5,31 +5,30 @@ import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
 import de.ollihoo.repository.PointOfInterestRepository
+import de.ollihoo.services.AddressService
 
 class AttractionDataServiceTest extends AttractionDataServiceTestBase {
   private static TOURPEDIA_JSON_RESPONSE =
       [TOURPEDIA_ENTRY_WITHOUT_ADDRESS, TOURPEDIA_ENTRY_WITH_ADDRESS,
        TOURPEDIA_ENTRY_WITH_CITY_COUNTRY_IN_ADDRESS, TOURPEDIA_ENTRY_WITH_NETHERLANDS_AS_ADDRESS]
-  public static final int ANY_POI_ID = 12345
-
+  public static final Long ANY_POI_ID = 12345L
 
   private TourpediaService tourpediaService
   private CityRepository cityRepository
-  private AddressRepository addressRepository
+  private AddressService addressService
   private PointOfInterestRepository pointOfInterestRepository
-
   private AttractionDataService service
 
   def setup() {
     tourpediaService = Mock(TourpediaService)
     cityRepository = Mock(CityRepository)
-    addressRepository = Mock(AddressRepository)
+    addressService = Mock(AddressService)
     pointOfInterestRepository = Mock(PointOfInterestRepository)
 
     service = new AttractionDataService(
         tourpediaService: tourpediaService,
         cityRepository: cityRepository,
-        addressRepository: addressRepository,
+        addressService: addressService,
         pointOfInterestRepository: pointOfInterestRepository
     )
     cityRepository.save(_, _) >> AMSTERDAM
@@ -104,7 +103,7 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
     PointOfInterest foundPoi = createFakePointOfInterest()
     Address foundAddress = new Address()
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
-    addressRepository.findByStreetAndLocation(_,_) >> foundAddress
+    addressService.getOrCreateAddress(_,_) >> foundAddress
 
     when:
     service.attractionsForAmsterdam

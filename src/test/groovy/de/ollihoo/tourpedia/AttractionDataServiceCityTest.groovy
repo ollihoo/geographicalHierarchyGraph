@@ -1,22 +1,22 @@
 package de.ollihoo.tourpedia
 
-import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
+import de.ollihoo.services.AddressService
 
 class AttractionDataServiceCityTest extends AttractionDataServiceTestBase {
   private TourpediaService tourpediaService
   private CityRepository cityRepository
-  private AddressRepository addressRepository
+  private AddressService addressService
   private AttractionDataService service
 
   def setup() {
     tourpediaService = Mock(TourpediaService)
     cityRepository = Mock(CityRepository)
-    addressRepository = Mock(AddressRepository)
+    addressService = Mock(AddressService)
     service = new AttractionDataService(
         tourpediaService: tourpediaService,
         cityRepository: cityRepository,
-        addressRepository: addressRepository
+        addressService: addressService
     )
     cityRepository.save(_, _) >> AMSTERDAM
   }
@@ -41,15 +41,6 @@ class AttractionDataServiceCityTest extends AttractionDataServiceTestBase {
     then:
     1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
     0 * cityRepository.save(_, _)
-  }
-
-  def "When no street is given, response has city as location"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
-    when:
-    def response = service.attractionsForAmsterdam
-
-    then:
-    isCityOfAmsterdam response[0].location
   }
 
 }

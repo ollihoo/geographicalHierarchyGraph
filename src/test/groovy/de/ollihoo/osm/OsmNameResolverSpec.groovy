@@ -8,9 +8,7 @@ import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
 import de.ollihoo.repository.DistrictRepository
 import de.ollihoo.repository.SectorRepository
-import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class OsmNameResolverSpec extends Specification {
 

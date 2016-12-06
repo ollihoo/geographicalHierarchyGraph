@@ -1,8 +1,9 @@
 package de.ollihoo.tourpedia
 
 import de.ollihoo.domain.Address
-import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
+import de.ollihoo.repository.PointOfInterestRepository
+import de.ollihoo.services.AddressService
 
 class AttractionDataServiceAddressTest extends AttractionDataServiceTestBase {
   private static
@@ -10,17 +11,20 @@ class AttractionDataServiceAddressTest extends AttractionDataServiceTestBase {
 
   private TourpediaService tourpediaService
   private CityRepository cityRepository
-  private AddressRepository addressRepository
+  private AddressService addressService
   private AttractionDataService service
+  private PointOfInterestRepository pointOfInterestRepository
 
   def setup() {
     tourpediaService = Mock(TourpediaService)
     cityRepository = Mock(CityRepository)
-    addressRepository = Mock(AddressRepository)
+    addressService = Mock(AddressService)
+    pointOfInterestRepository = Mock(PointOfInterestRepository)
     service = new AttractionDataService(
         tourpediaService: tourpediaService,
         cityRepository: cityRepository,
-        addressRepository: addressRepository
+        addressService: addressService,
+        pointOfInterestRepository: pointOfInterestRepository
     )
     cityRepository.save(_, _) >> AMSTERDAM
   }
@@ -34,82 +38,27 @@ class AttractionDataServiceAddressTest extends AttractionDataServiceTestBase {
     0 * cityRepository.save(_, _)
   }
 
-  def "When no street is given, response has city as location"() {
+  def "When address is null, add Amsterdam as location" () {
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
-    when:
-    def response = service.attractionsForAmsterdam
-
-    then:
-    isCityOfAmsterdam response[0].location
-  }
-
-  def "When street is given, response has address as location"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
-    addressRepository.save(_, 1) >> { parameters -> parameters[0] }
-
-    when:
-    def response = service.attractionsForAmsterdam
-
-    then:
-    isAmsterdamWithStreet(response[0].location, "Van Kinsbergenstraat 6")
-  }
-
-  def "When street is given, a response address is tested to be in database"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
-    when:
-    service.attractionsForAmsterdam
-
-    then:
-    1 * addressRepository.findByStreetAndLocation("Van Kinsbergenstraat 6", AMSTERDAM)
-  }
-
-  def "When street is found in database, entry is returned without saving"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
-    addressRepository.findByStreetAndLocation("Van Kinsbergenstraat 6", AMSTERDAM) >> VAN_KINSBERGENSTRAAT_6
-
-    when:
-    def response = service.attractionsForAmsterdam
-
-    then:
-    response[0].location == VAN_KINSBERGENSTRAAT_6
-  }
-
-  def "When street is not found in database, entry is saved and returned"() {
-    addressRepository.findByStreetAndLocation("Van Kinsbergenstraat 6", AMSTERDAM) >> null
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_ADDRESS]
-    def savedAddress = null
-
-    when:
-    service.attractionsForAmsterdam
-
-    then:
-    1 * addressRepository.save(_, 1) >> { parameters ->
-      savedAddress = (parameters[0].street == "Van Kinsbergenstraat 6") ? VAN_KINSBERGENSTRAAT_6 : null
-      savedAddress
-    }
-    savedAddress == VAN_KINSBERGENSTRAAT_6
-  }
-
-  def "When 'Amsterdam, Netherlands' is in street name, remove it"() {
-    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_CITY_COUNTRY_IN_ADDRESS]
-    addressRepository.save(_, 1) >> { parameters -> parameters[0] }
+    pointOfInterestRepository.save(_,_) >> { parameters -> parameters[0] }
 
     when:
     def responses = service.attractionsForAmsterdam
 
     then:
-    responses[0].location.street == "Eva Besnyöstraat 289"
+    responses[0].location == AMSTERDAM
   }
 
-  def "When 'Netherlands' is street name, use city of Amsterdam"() {
+  def "When address is set, it is used as location"() {
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_NETHERLANDS_AS_ADDRESS]
-    addressRepository.save(_, 1) >> { parameters -> parameters[0] }
+    addressService.getOrCreateAddress(_, _) >> VAN_KINSBERGENSTRAAT_6
+    pointOfInterestRepository.save(_,_) >> { parameters -> parameters[0] }
 
     when:
     def responses = service.attractionsForAmsterdam
 
     then:
-    isCityOfAmsterdam(responses[0].location)
+    responses[0].location == VAN_KINSBERGENSTRAAT_6
   }
 
 }

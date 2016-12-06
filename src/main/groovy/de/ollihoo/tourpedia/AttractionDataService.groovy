@@ -3,14 +3,15 @@ package de.ollihoo.tourpedia
 import de.ollihoo.domain.Address
 import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
-import de.ollihoo.repository.AddressRepository
 import de.ollihoo.repository.CityRepository
 import de.ollihoo.repository.PointOfInterestRepository
+import de.ollihoo.services.AddressService
 import org.springframework.beans.factory.annotation.Autowired
 
 class AttractionDataService {
 
     public static final String TOURPEDIA_PREFIX = "tourpedia#"
+
     @Autowired
     private TourpediaService tourpediaService
 
@@ -18,7 +19,7 @@ class AttractionDataService {
     private CityRepository cityRepository
 
     @Autowired
-    private AddressRepository addressRepository
+    private AddressService addressService
 
     @Autowired
     PointOfInterestRepository pointOfInterestRepository
@@ -31,7 +32,7 @@ class AttractionDataService {
         City amsterdam = getOrCreateCity("Amsterdam")
 
         json.collect { entry ->
-            Address address = getOrCreateAddress(amsterdam, entry)
+            Address address = addressService.getOrCreateAddress(amsterdam, entry)
 
             PointOfInterest poi = pointOfInterestRepository.findByName(entry.name)
             if (poi) {
@@ -55,21 +56,5 @@ class AttractionDataService {
         cityRepository.findByName(cityName) ?: cityRepository.save(new City(name: cityName), 1)
     }
 
-    private Address getOrCreateAddress(City city, entry) {
-        String trimmedAddress = removeUnexpectedEntriesFromStreet(entry.address)
-        if (trimmedAddress) {
-            Address existingAddress = addressRepository.findByStreetAndLocation(trimmedAddress, city)
-            return existingAddress ?:
-                    addressRepository.save(new Address(street: trimmedAddress, zip: "", location: city), 1)
-        }
-        null
-    }
-
-    private removeUnexpectedEntriesFromStreet(String input) {
-        if (input) {
-            return input.replaceAll(", Amsterdam", "").replaceAll(/,? *Netherlands/, "")
-        }
-        null
-    }
 
 }
