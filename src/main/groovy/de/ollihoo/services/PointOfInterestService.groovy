@@ -14,25 +14,18 @@ class PointOfInterestService {
   @Autowired
   PointOfInterestRepository pointOfInterestRepository
 
-  PointOfInterest insertOrUpdatePoi(entry, AdministrativeUnit location) {
-    PointOfInterest poi = pointOfInterestRepository.findByName(entry.name)
+  PointOfInterest insertOrUpdatePoi(PointOfInterest pointOfInterest) {
+    PointOfInterest poi = pointOfInterestRepository.findByName(pointOfInterest.name)
     if (poi) {
-      poi.name = entry.name
-      poi.type = entry.category
-      poi.lat = entry.lat
-      poi.lng = entry.lng
-      poi.location = location
-      poi.referenceId = TOURPEDIA_PREFIX + entry.id + ""
+      poi.name = pointOfInterest.name
+      poi.type = pointOfInterest.type
+      poi.lat = pointOfInterest.lat
+      poi.lng = pointOfInterest.lng
+      poi.location = pointOfInterest.location
+      poi.referenceId = pointOfInterest.referenceId
       pointOfInterestRepository.save(poi, 1)
     } else {
-      pointOfInterestRepository.save(
-          new PointOfInterest(
-              name: entry.name,
-              type: entry.category,
-              lat: entry.lat, lng: entry.lng,
-              location: location,
-              referenceId: TOURPEDIA_PREFIX + entry.id
-          ), 1)
+      pointOfInterestRepository.save(pointOfInterest, 1)
     }
   }
 

@@ -67,29 +67,43 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
     service.attractionsForAmsterdam
 
     then:
-    1 * pointOfInterestService.insertOrUpdatePoi(TOURPEDIA_ENTRY_WITHOUT_ADDRESS, AMSTERDAM)
+    1 * pointOfInterestService.insertOrUpdatePoi(_)
   }
 
   def "When address is null, add Amsterdam as location"() {
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
+    pointOfInterestService.insertOrUpdatePoi(_) >> { parameters -> parameters[0] }
 
     when:
-    service.attractionsForAmsterdam
+    def actualPointOfInterests = service.attractionsForAmsterdam
 
     then:
-    1 * pointOfInterestService.insertOrUpdatePoi(_, AMSTERDAM) >> new PointOfInterest()
+    actualPointOfInterests[0].location == AMSTERDAM
   }
 
   def "When address is set, it is used as location"() {
     tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITH_NETHERLANDS_AS_ADDRESS]
     addressService.getOrCreateAddress(_, _) >> VAN_KINSBERGENSTRAAT_6
+    pointOfInterestService.insertOrUpdatePoi(_) >> {parameters -> parameters[0]}
 
     when:
-    service.attractionsForAmsterdam
-
+    def actualPointOfInterests = service.attractionsForAmsterdam
 
     then:
-    1 * pointOfInterestService.insertOrUpdatePoi(_, VAN_KINSBERGENSTRAAT_6) >> new PointOfInterest()
+    actualPointOfInterests[0].location == VAN_KINSBERGENSTRAAT_6
   }
+
+  def "When POI is found, it saves the original ID from tourpedia"() {
+    tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> [TOURPEDIA_ENTRY_WITHOUT_ADDRESS]
+    pointOfInterestService.insertOrUpdatePoi(_)  >> { parameters -> parameters[0] }
+
+    when:
+    def actualPointOfInterests = service.attractionsForAmsterdam
+
+    then:
+
+    actualPointOfInterests[0].referenceId == "tourpedia#" + TOURPEDIA_ENTRY_WITHOUT_ADDRESS.id
+  }
+
 
 }

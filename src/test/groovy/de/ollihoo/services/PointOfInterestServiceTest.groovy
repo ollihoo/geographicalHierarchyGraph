@@ -1,11 +1,21 @@
 package de.ollihoo.services
 
+import de.ollihoo.domain.AdministrativeUnit
+import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.PointOfInterestRepository
 import de.ollihoo.tourpedia.AttractionDataServiceTestBase
 
 class PointOfInterestServiceTest extends AttractionDataServiceTestBase {
-  public static final Long ANY_POI_ID = 12345L
+  private static final Long ANY_POI_ID = 12345L
+  private static final String ANY_POI_NAME = "POI NAME"
+  private static final String ANY_REFERENCE_ID = "foobar#111"
+  private static final AdministrativeUnit ANY_LOCATION = new City()
+  private static final BigDecimal ANY_LNG = new BigDecimal("22")
+  private static final BigDecimal ANY_LAT = new BigDecimal("33")
+  private static final String ANY_TYPE = "fooType"
+  public static final long EXISTING_POI_ID = 77777L
+
 
   private PointOfInterestService pointOfInterestService
   private PointOfInterestRepository pointOfInterestRepository
@@ -15,66 +25,44 @@ class PointOfInterestServiceTest extends AttractionDataServiceTestBase {
     pointOfInterestService = new PointOfInterestService(pointOfInterestRepository: pointOfInterestRepository)
   }
 
-  def "When POI already exists, it is updated" () {
-    PointOfInterest foundPoi = createFakePointOfInterest()
+  def "When POI already exists, it is updated"() {
+    PointOfInterest foundPOI = createFakePointOfInterest()
 
     when:
-    pointOfInterestService.insertOrUpdatePoi(TOURPEDIA_ENTRY_WITHOUT_ADDRESS, AMSTERDAM)
+    pointOfInterestService.insertOrUpdatePoi(foundPOI)
 
     then:
-    1 * pointOfInterestRepository.findByName(TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name) >> foundPoi
-    1 * pointOfInterestRepository.save(foundPoi, 1)
-    foundPoi.id == ANY_POI_ID
-    foundPoi.name == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name
-    foundPoi.type == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.category
-    foundPoi.lat == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lat
-    foundPoi.lng == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lng
-    foundPoi.location == AMSTERDAM
+    1 * pointOfInterestRepository.findByName(_) >> foundPOI
+    1 * pointOfInterestRepository.save(foundPOI, 1)
   }
 
-  def "When POI without address already exists, it is updated" () {
-    PointOfInterest foundPoi = createFakePointOfInterest()
+  def "When POI already exists, it's values are updated"() {
+    PointOfInterest updatedPoi = new PointOfInterest(id: EXISTING_POI_ID)
+    pointOfInterestRepository.findByName(_) >> updatedPoi
 
     when:
-    pointOfInterestService.insertOrUpdatePoi(TOURPEDIA_ENTRY_WITHOUT_ADDRESS, AMSTERDAM)
+    pointOfInterestService.insertOrUpdatePoi(createFakePointOfInterest())
 
     then:
-    1 * pointOfInterestRepository.findByName(TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name) >> foundPoi
-    1 * pointOfInterestRepository.save(foundPoi, 1)
-    foundPoi.id == ANY_POI_ID
-    foundPoi.name == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.name
-    foundPoi.type == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.category
-    foundPoi.lat == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lat
-    foundPoi.lng == TOURPEDIA_ENTRY_WITHOUT_ADDRESS.lng
-    foundPoi.location == AMSTERDAM
-    foundPoi.referenceId == "tourpedia#" + TOURPEDIA_ENTRY_WITHOUT_ADDRESS.id
-  }
-  def "When POI with address already exists, it is updated" () {
-    PointOfInterest foundPoi = createFakePointOfInterest()
-
-    when:
-    def actualPoi = pointOfInterestService.insertOrUpdatePoi(TOURPEDIA_ENTRY_WITH_ADDRESS, AMSTERDAM)
-
-    then:
-    1 * pointOfInterestRepository.findByName(TOURPEDIA_ENTRY_WITH_ADDRESS.name) >> foundPoi
-    1 * pointOfInterestRepository.save(foundPoi, 1) >> { parameters -> parameters[0] }
-    actualPoi.id == ANY_POI_ID
-    actualPoi.location == AMSTERDAM
+    updatedPoi.name == ANY_POI_NAME
+    updatedPoi.id == EXISTING_POI_ID
+    updatedPoi.referenceId == ANY_REFERENCE_ID
+    updatedPoi.location == ANY_LOCATION
+    updatedPoi.lat == ANY_LAT
+    updatedPoi.lng ==ANY_LNG
+    updatedPoi.type == ANY_TYPE
   }
 
-
-  def "When POI is found, it saves the original ID from tourpedia"() {
-    pointOfInterestRepository.save(_,_) >> { parameters -> parameters[0] }
-
-    when:
-    PointOfInterest poi = pointOfInterestService.insertOrUpdatePoi(TOURPEDIA_ENTRY_WITHOUT_ADDRESS, AMSTERDAM)
-
-    then:
-    poi.referenceId == "tourpedia#33985"
-  }
-
-  private PointOfInterest createFakePointOfInterest () {
-    new PointOfInterest(id: ANY_POI_ID)
+  private PointOfInterest createFakePointOfInterest() {
+    new PointOfInterest(
+        id: ANY_POI_ID,
+        name: ANY_POI_NAME,
+        type: ANY_TYPE,
+        lat: ANY_LAT,
+        lng: ANY_LNG,
+        location: ANY_LOCATION,
+        referenceId: ANY_REFERENCE_ID
+    )
   }
 
 }
