@@ -30,6 +30,6 @@ class ApplicationNeo4jConfiguration extends Neo4jConfiguration {
                 .setDriverClassName("org.neo4j.ogm.drivers.bolt.driver.BoltDriver")
                 .setURI("bolt://${neo4jUser}:${neo4jPassword}@${neo4jHost}")
                 .setEncryptionLevel("NONE")
-        new SessionFactory(configuration, "org.ollihoo.domain")
+        new SessionFactory(configuration, "de.ollihoo.domain")
     }
 }

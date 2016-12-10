@@ -2,6 +2,7 @@ package de.ollihoo.controller
 
 import de.ollihoo.osm.ListingService
 import de.ollihoo.repository.PointOfInterestRepository
+import de.ollihoo.tourpedia.AttractionDataService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -16,6 +17,9 @@ class InsertionController {
     PointOfInterestRepository pointOfInterestRepository
 
     @Autowired
+    AttractionDataService attractionDataService
+
+    @Autowired
     ListingService listingService
 
     @RequestMapping(value = "/resolve/{city}", method = RequestMethod.GET)
@@ -26,7 +30,11 @@ class InsertionController {
 
     @RequestMapping(value = "/create/{city}", method = RequestMethod.GET)
     def index(@PathVariable(value="city") String city, Model model) {
-        model.addAttribute("pois", listingService.parsePointOfInterestsWithCoordinates(city))
+        if (city == "amsterdam") {
+            model.addAttribute("pois", attractionDataService.attractionsForAmsterdam)
+        } else {
+            model.addAttribute("pois", listingService.parsePointOfInterestsWithCoordinates(city))
+        }
         "insert"
     }
 }
