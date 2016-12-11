@@ -26,13 +26,11 @@ class AttractionDataService {
   @Autowired
   private OsmService osmService
 
-  List<PointOfInterest> getAttractionsForAmsterdam() {
-  String cityName = "Amsterdam"
-
+  List<PointOfInterest> getAttractionsFor(String cityName) {
     def json = tourpediaService.getJsonResponseFor(cityName, "attraction")
 
     City amsterdam = cityService.getCity(cityName)
-    if (! amsterdam) {
+    if (!amsterdam) {
       PointOfInterest poi = osmService.getPointOfInterestByRequest(cityName)
       City city = new City(name: poi.name, lat: poi.lat, lng: poi.lng)
       amsterdam = cityService.createOrUpdateCity(city)
@@ -51,7 +49,6 @@ class AttractionDataService {
       pointOfInterestService.insertOrUpdatePoi(poi)
     }
   }
-
 
 
 }
