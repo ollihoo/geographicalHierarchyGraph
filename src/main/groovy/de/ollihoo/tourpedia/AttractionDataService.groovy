@@ -6,6 +6,7 @@ import de.ollihoo.domain.City
 import de.ollihoo.domain.PointOfInterest
 import de.ollihoo.repository.CityRepository
 import de.ollihoo.services.AddressService
+import de.ollihoo.services.CityService
 import de.ollihoo.services.PointOfInterestService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -17,7 +18,7 @@ class AttractionDataService {
   @Autowired
   private TourpediaService tourpediaService
   @Autowired
-  private CityRepository cityRepository
+  private CityService cityService
   @Autowired
   private AddressService addressService
   @Autowired
@@ -27,7 +28,7 @@ class AttractionDataService {
 
     def json = tourpediaService.getJsonResponseFor("Amsterdam", "attraction")
 
-    City amsterdam = getOrCreateCity("Amsterdam")
+    City amsterdam = cityService.getOrCreateCity("Amsterdam")
 
     json.collect { entry ->
       Address address = addressService.getOrCreateAddress(amsterdam, entry)
@@ -43,9 +44,6 @@ class AttractionDataService {
     }
   }
 
-  private City getOrCreateCity(String cityName) {
-    cityRepository.findByName(cityName) ?: cityRepository.save(new City(name: cityName), 1)
-  }
 
 
 }

@@ -1,9 +1,8 @@
 package de.ollihoo.tourpedia
 
 import de.ollihoo.domain.Address
-import de.ollihoo.domain.PointOfInterest
-import de.ollihoo.repository.CityRepository
 import de.ollihoo.services.AddressService
+import de.ollihoo.services.CityService
 import de.ollihoo.services.PointOfInterestService
 
 class AttractionDataServiceTest extends AttractionDataServiceTestBase {
@@ -14,24 +13,24 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
   final Address VAN_KINSBERGENSTRAAT_6 = new Address(street: "Van Kinsbergenstraat 6", location: AttractionDataServiceTestBase.AMSTERDAM)
 
   private TourpediaService tourpediaService
-  private CityRepository cityRepository
+  private CityService cityService
   private AddressService addressService
   private PointOfInterestService pointOfInterestService
   private AttractionDataService service
 
   def setup() {
     tourpediaService = Mock(TourpediaService)
-    cityRepository = Mock(CityRepository)
+    cityService = Mock(CityService)
     addressService = Mock(AddressService)
     pointOfInterestService = Mock(PointOfInterestService)
 
     service = new AttractionDataService(
         tourpediaService: tourpediaService,
-        cityRepository: cityRepository,
+        cityService: cityService,
         addressService: addressService,
         pointOfInterestService: pointOfInterestService
     )
-    cityRepository.save(_, _) >> AMSTERDAM
+    cityService.getOrCreateCity(_) >> AMSTERDAM
   }
 
   def "Get point of interests from tourpediaService"() {
@@ -42,13 +41,13 @@ class AttractionDataServiceTest extends AttractionDataServiceTestBase {
     1 * tourpediaService.getJsonResponseFor("Amsterdam", "attraction") >> TOURPEDIA_JSON_RESPONSE
   }
 
-  def "When Amsterdam is known, return it without saving"() {
+  def "Get as instance of Amsterdam" () {
     when:
     service.attractionsForAmsterdam
 
     then:
-    1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
-    0 * cityRepository.save(_, _)
+    1 * cityService.getOrCreateCity("Amsterdam") >> AMSTERDAM
+
   }
 
   def "Method parses all given elements"() {

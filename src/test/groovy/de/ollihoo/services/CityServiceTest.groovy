@@ -1,30 +1,22 @@
-package de.ollihoo.tourpedia
+package de.ollihoo.services
 
 import de.ollihoo.repository.CityRepository
-import de.ollihoo.services.AddressService
+import de.ollihoo.tourpedia.AttractionDataServiceTestBase
 
-class AttractionDataServiceCityTest extends AttractionDataServiceTestBase {
-  private TourpediaService tourpediaService
+class CityServiceTest extends AttractionDataServiceTestBase {
   private CityRepository cityRepository
-  private AddressService addressService
-  private AttractionDataService service
+  private CityService service
 
   def setup() {
-    tourpediaService = Mock(TourpediaService)
     cityRepository = Mock(CityRepository)
-    addressService = Mock(AddressService)
-    service = new AttractionDataService(
-        tourpediaService: tourpediaService,
-        cityRepository: cityRepository,
-        addressService: addressService
-    )
+    service = new CityService(cityRepository: cityRepository)
     cityRepository.save(_, _) >> AMSTERDAM
   }
 
   def "When Amsterdam is unknown, save it to the database"() {
     def usedCity = null
     when:
-    service.attractionsForAmsterdam
+    service.getOrCreateCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam") >> null
@@ -36,7 +28,7 @@ class AttractionDataServiceCityTest extends AttractionDataServiceTestBase {
 
   def "When Amsterdam is known, return it without saving"() {
     when:
-    service.attractionsForAmsterdam
+    service.getOrCreateCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
