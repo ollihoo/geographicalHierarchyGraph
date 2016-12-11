@@ -11,7 +11,11 @@ class CityService {
   @Autowired
   private CityRepository cityRepository
 
-  City getOrCreateCity(String cityName) {
-    cityRepository.findByName(cityName) ?: cityRepository.save(new City(name: cityName), 1)
+  City getCity(String cityName) {
+    cityRepository.findByName(cityName)
+  }
+
+  City createOrUpdateCity(City city) {
+    cityRepository.save(city, 1)
   }
 }

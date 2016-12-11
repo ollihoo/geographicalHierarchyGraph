@@ -16,7 +16,7 @@ class CityServiceTest extends AttractionDataServiceTestBase {
   def "When Amsterdam is unknown, save it to the database"() {
     def usedCity = null
     when:
-    service.getOrCreateCity("Amsterdam")
+    service.getCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam") >> null
@@ -28,7 +28,7 @@ class CityServiceTest extends AttractionDataServiceTestBase {
 
   def "When Amsterdam is known, return it without saving"() {
     when:
-    service.getOrCreateCity("Amsterdam")
+    service.getCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
