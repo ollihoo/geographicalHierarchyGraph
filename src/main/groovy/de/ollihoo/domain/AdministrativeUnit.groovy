@@ -20,6 +20,8 @@ class AdministrativeUnit {
   private synchronized setCoordinate() {
     if (lat && lng) {
       coordinate = new Coordinate(latitude: lat, longitude: lng)
+    } else {
+      throw new InvalidCoordinateException("Invalid coordinate: $lat/$lng")
     }
   }
 
