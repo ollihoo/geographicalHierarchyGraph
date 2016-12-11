@@ -27,9 +27,8 @@ class CityServiceTest extends AttractionDataServiceTestBase {
 
 
   def "When Amsterdam is searched, it uses cityRepository" () {
-    def usedCity = null
     when:
-    def result = service.getCity("Amsterdam")
+    service.getCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam")
