@@ -1,9 +1,11 @@
 package de.ollihoo.services
 
+import de.ollihoo.domain.City
 import de.ollihoo.repository.CityRepository
 import de.ollihoo.tourpedia.AttractionDataServiceTestBase
 
 class CityServiceTest extends AttractionDataServiceTestBase {
+  public static final City ANY_NEW_CITY = new City(name: "Amsterdam")
   private CityRepository cityRepository
   private CityService service
 
@@ -13,26 +15,32 @@ class CityServiceTest extends AttractionDataServiceTestBase {
     cityRepository.save(_, _) >> AMSTERDAM
   }
 
-  def "When Amsterdam is unknown, save it to the database"() {
+  def "When Amsterdam is unknown, it returns null" () {
     def usedCity = null
     when:
-    service.getCity("Amsterdam")
+    def result = service.getCity("Amsterdam")
 
     then:
     1 * cityRepository.findByName("Amsterdam") >> null
-    1 * cityRepository.save(_, 1) >> { parameters ->
-      usedCity = parameters[0].name == "Amsterdam" ? AMSTERDAM : null
-    }
-    usedCity == AMSTERDAM
+    result == null
   }
 
-  def "When Amsterdam is known, return it without saving"() {
+
+  def "When Amsterdam is searched, it uses cityRepository" () {
+    def usedCity = null
     when:
-    service.getCity("Amsterdam")
+    def result = service.getCity("Amsterdam")
 
     then:
-    1 * cityRepository.findByName("Amsterdam") >> AMSTERDAM
-    0 * cityRepository.save(_, _)
+    1 * cityRepository.findByName("Amsterdam")
+  }
+
+  def "When new city is given, it will be saved" () {
+    when:
+    service.createOrUpdateCity(ANY_NEW_CITY)
+
+    then:
+    1 * cityRepository.save(ANY_NEW_CITY, 1)
   }
 
 }
