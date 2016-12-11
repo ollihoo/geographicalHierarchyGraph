@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 class InsertionController {
 
     @Autowired
-    PointOfInterestRepository pointOfInterestRepository
-
-    @Autowired
     AttractionDataService attractionDataService
 
     @Autowired
