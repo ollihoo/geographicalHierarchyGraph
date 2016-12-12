@@ -61,12 +61,17 @@ task dockerCopyJar(type: Copy, dependsOn: 'dockerCopy') {
   into "build/docker"
 }
 
-task docker(type: Exec, dependsOn: 'dockerCopyJar') {
+task docker(dependsOn: 'dockerCopyJar') {
   doLast {
-    workingDir 'build/docker'
-    commandLine 'docker', '-t', 'ollihoo/geo:latest', 'build', './'
+    println "######################### Run docker build"
   }
 }
+
+task dockerBuild(type: Exec, dependsOn: 'docker') {
+  workingDir 'build/docker'
+  commandLine 'docker', '-t', 'ollihoo/geo:latest', 'build', './'
+}
+
 
 task wrapper(type: Wrapper) {
   gradleVersion = '3.2.1'
