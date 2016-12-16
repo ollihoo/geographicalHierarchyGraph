@@ -69,9 +69,14 @@ task docker(dependsOn: 'dockerCopyJar') {
 
 task dockerBuild(type: Exec, dependsOn: 'docker') {
   workingDir 'build/docker'
-  commandLine 'docker', '-t', 'ollihoo/geo:latest', 'build', './'
+  commandLine 'docker', 'build', '-t', 'ollihoo/geographicalhierarchygraph:latest', './'
 }
 
+
+task dockerPush(type: Exec, dependsOn: 'dockerBuild') {
+  workingDir 'build/docker'
+  commandLine 'docker', 'push', 'ollihoo/geographicalhierarchygraph:latest'
+}
 
 task wrapper(type: Wrapper) {
   gradleVersion = '3.2.1'
