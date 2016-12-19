@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.network "forwarded_port", guest: 80, host: 10080
+  config.vm.network "forwarded_port", guest: 7474, host: 7474
+  config.vm.network "forwarded_port", guest: 7687, host: 7687
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+  end
+
+#  config.vm.provision "docker" do |docker|
+#      docker.run "ollihoo/geographicalhierarchygraph",
+#      args: "-p 8080:80 -v /app/logs:/logs  -v /app/config:/config",
+#      daemonize: true
+#    end
+
+  config.vm.provision "docker" do |docker|
+    docker.run "neo4j",
+      image: "neo4j:3.0",
+      args: "-p 7474:7474 -p 7687:7687 -v /app/neo4j/data:/data -v /app/neo4j/logs:/logs",
+      daemonize: true
+  end
+
+end
