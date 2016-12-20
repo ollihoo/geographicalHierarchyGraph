@@ -10,4 +10,16 @@ This application uses interfaces to OSM to parse data. <a href="http://www.opens
 
 It uses also Tour-Pedia for getting attraction data: http://tour-pedia.org/about/
 
- 
+
+## Installation
+
+### Prerequisites
+
+* JDK 8+
+* Virtualbox
+* vagrant
+* docker
+* ansible
+    * on Mac: brew install ansible
+
+
