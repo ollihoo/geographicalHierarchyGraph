@@ -1,0 +1,51 @@
+---
+- hosts: geoservers
+  vars:
+    appLogsDir: "/var/run/app/logs"
+    appConfigDir: "/var/run/app/config"
+    neo4jDataDir: "/var/run/neo4j/data"
+    neo4jLogsDir: "/var/run/neo4j/logs"
+  connection: local
+  remote_user: vagrant
+  become: true
+  become_user: root
+  tasks:
+  - name: ensure server is up-to-date
+    apt:
+      upgrade: dist
+      update_cache: yes
+  - name: install docker.io
+    apt:
+      name: docker.io
+  - name: install docker-py
+    pip:
+      name: docker-py
+  - name: create application directory for logging
+    file:
+      path: "{{ appLogsDir }}"
+      state: directory
+  - name: create application directory for configuration
+    file:
+      path: "{{ appConfigDir }}"
+      state: directory
+  - name: create data directory for neo4j
+    file:
+      path: "{{ neo4jDataDir }}"
+      state: directory
+  - name: create logs directory for neo4j
+    file:
+      path: "{{ neo4jLogsDir }}"
+      state: directory
+  - name: install neo4j
+    docker_container:
+      name: neo4j
+      image: neo4j:latest
+      state: started
+      restart: yes
+      restart_policy: unless-stopped
+      published_ports:
+        - "7474:7474"
+        - "7687:7687"
+      volumes:
+        - "{{ neo4jDataDir }}:/data"
+        - "{{ neo4jLogsDir }}:/logs"
