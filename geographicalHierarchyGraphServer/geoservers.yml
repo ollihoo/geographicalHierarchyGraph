@@ -5,6 +5,8 @@
     appConfigDir: "/var/run/app/config"
     neo4jDataDir: "/var/run/neo4j/data"
     neo4jLogsDir: "/var/run/neo4j/logs"
+    neo4jUser: "neo4j"
+    neo4jPassword: "iLoveGraphs"
   connection: local
   remote_user: vagrant
   become: true
@@ -43,6 +45,8 @@
       state: started
       restart: yes
       restart_policy: unless-stopped
+      env:
+        NEO4J_AUTH: "{{neo4jUser}}/{{neo4jPassword}}"
       published_ports:
         - "7474:7474"
         - "7687:7687"
