@@ -22,7 +22,7 @@ def boltVersion = '2.0.5'
 group = 'ollihoo'
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven { url "http://repo.spring.io/snapshot" }
     mavenLocal()
 }
