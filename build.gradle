@@ -75,17 +75,19 @@ task dockerBuild(type: Exec, dependsOn: 'docker') {
     commandLine 'docker', 'build', '-t', 'ollihoo/geographicalhierarchygraph:latest', './'
 }
 
-task dockerPush(type: Exec) {
+task dockerLogin(type: Exec) {
     workingDir 'build/docker'
-    println "Login"
-    commandLine 'docker', 'login', '-u', dockerUsername, '-p', dockerPassword
-    println "Push"
+    commandLine 'docker', 'login', '-u', "$dockerUsername", '-p', "$dockerPassword"
+}
+
+task dockerPush(type: Exec, dependsOn: 'dockerBuild') {
+    workingDir 'build/docker'
     commandLine 'docker', 'push', 'ollihoo/geographicalhierarchygraph:latest'
-    println "Logout"
+}
+
+task dockerLogout(type: Exec) {
+    workingDir 'build/docker'
     commandLine 'docker', 'logout'
-    ext.output = {
-        return standardOutput.toString()
-    }
 }
 
 task wrapper(type: Wrapper) {
