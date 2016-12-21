@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
     repositories {
         mavenCentral()
@@ -51,26 +53,26 @@ dependencies {
     testCompile('cglib:cglib-nodep:3.2.4')
 }
 
-task dockerCopy(type: Copy, dependsOn: 'build') {
+task copyDockerTemplates(type: Copy, dependsOn: 'build') {
     from "src/main/docker"
     into "build/docker"
+    filter(ReplaceTokens, tokens: [applicationVersion: applicationVersion])
 }
 
-task dockerCopyJar(type: Copy, dependsOn: 'dockerCopy') {
+task copyJarToDocker(type: Copy, dependsOn: 'copyDockerTemplates') {
     from "build/libs"
     into "build/docker"
 }
 
-task docker(dependsOn: 'dockerCopyJar') {
+task docker(dependsOn: 'copyJarToDocker') {
     doLast {
-        println "######################### Run docker build: ${dockerUsername}"
+        println "Current version is ################## ${applicationVersion} #################"
     }
 }
 
 task dockerBuild(type: Exec, dependsOn: 'docker') {
     workingDir 'build/docker'
     commandLine 'docker', 'build', '-t', 'ollihoo/geographicalhierarchygraph:latest', './'
-
 }
 
 task dockerPush(type: Exec) {
