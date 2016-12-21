@@ -75,7 +75,7 @@ task dockerBuild(type: Exec, dependsOn: 'docker') {
 
 task dockerPush(type: Exec) {
     workingDir 'build/docker'
-    commandLine 'docker', 'login', '-u', $dockerUsername, '-p', $dockerPassword
+    commandLine 'docker', 'login', '-u', dockerUsername, '-p', dockerPassword
     commandLine 'docker', 'push', 'ollihoo/geographicalhierarchygraph:latest'
     commandLine 'docker', 'logout'
 }
