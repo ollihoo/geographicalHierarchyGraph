@@ -78,8 +78,8 @@ task dockerBuild(type: Exec, dependsOn: 'docker') {
 
 task dockerLogin(type: Exec) {
     workingDir 'build/docker'
-    println environment
-    commandLine 'docker', 'login', '-u', "'$dockerUsername'", '-p', "'$dockerPassword'"
+    executable 'sh'
+    args "-c", "docker login -u '$dockerUsername' -p '$dockerPassword'"
 }
 
 task dockerPush(type: Exec, dependsOn: 'dockerBuild') {
