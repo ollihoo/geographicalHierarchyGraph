@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
 class InsertionController {
-    private static Logger LOG = LoggerFactory.getLogger(InsertionController)
+    private Logger logger = LoggerFactory.getLogger(InsertionController)
 
     @Autowired
     AttractionDataService attractionDataService
@@ -37,7 +37,7 @@ class InsertionController {
                 model.addAttribute("pois", listingService.parsePointOfInterestsWithCoordinates(normalizedCity))
             }
         } catch (all) {
-            LOG.error("Insertion failed: " + all.getMessage())
+            logger.error("Insertion failed: " + all.getMessage())
         }
         "insert"
     }
