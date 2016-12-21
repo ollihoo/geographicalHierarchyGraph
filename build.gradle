@@ -72,11 +72,13 @@ task docker(dependsOn: 'copyJarToDocker') {
 
 task dockerBuild(type: Exec, dependsOn: 'docker') {
     workingDir 'build/docker'
+    println environment
     commandLine 'docker', 'build', '-t', 'ollihoo/geographicalhierarchygraph:latest', './'
 }
 
 task dockerLogin(type: Exec) {
     workingDir 'build/docker'
+    println environment
     commandLine 'docker', 'login', '-u', "$dockerUsername", '-p', "$dockerPassword"
 }
 
