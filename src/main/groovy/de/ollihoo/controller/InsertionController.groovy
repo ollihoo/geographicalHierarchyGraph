@@ -2,6 +2,8 @@ package de.ollihoo.controller
 
 import de.ollihoo.osm.ListingService
 import de.ollihoo.tourpedia.AttractionDataService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
 class InsertionController {
+    private static Logger LOG = LoggerFactory.getLogger(InsertionController)
 
     @Autowired
     AttractionDataService attractionDataService
@@ -26,10 +29,15 @@ class InsertionController {
 
     @RequestMapping(value = "/create/{city}", method = RequestMethod.GET)
     def index(@PathVariable(value="city") String city, Model model) {
-        if (city == "amsterdam") {
-            model.addAttribute("pois", attractionDataService.getAttractionsFor("Amsterdam"))
-        } else {
-            model.addAttribute("pois", listingService.parsePointOfInterestsWithCoordinates(city))
+        String normalizedCity = city.toLowerCase()
+        try {
+            if (normalizedCity == "amsterdam") {
+                model.addAttribute("pois", attractionDataService.getAttractionsFor("Amsterdam"))
+            } else {
+                model.addAttribute("pois", listingService.parsePointOfInterestsWithCoordinates(normalizedCity))
+            }
+        } catch (all) {
+            LOG.error("Insertion failed: " + all.getMessage())
         }
         "insert"
     }
