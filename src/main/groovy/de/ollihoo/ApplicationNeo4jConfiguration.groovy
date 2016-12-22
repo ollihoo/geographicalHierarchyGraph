@@ -24,12 +24,13 @@ class ApplicationNeo4jConfiguration extends Neo4jConfiguration {
 
     @Override
     SessionFactory getSessionFactory() {
+        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration()
 
-        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
         configuration.driverConfiguration()
                 .setDriverClassName("org.neo4j.ogm.drivers.bolt.driver.BoltDriver")
                 .setURI("bolt://${neo4jUser}:${neo4jPassword}@${neo4jHost}")
                 .setEncryptionLevel("NONE")
+
         new SessionFactory(configuration, "de.ollihoo.domain")
     }
 }
