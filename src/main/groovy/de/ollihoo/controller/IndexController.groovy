@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 @Controller
 class IndexController {
 
-    @Value('${application.version}')
-    private String applicationVersion
+    @Value('${app.version}')
+    private String version
 
-    @RequestMapping(value="/", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     String index(Model model) {
-        model.addAttribute("applicationVersion", applicationVersion)
+        model.addAttribute("version", version)
         "index"
     }
 }
