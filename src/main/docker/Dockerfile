@@ -2,6 +2,7 @@ FROM java:8
 ADD geographicalHierarchy-0.0.1-SNAPSHOT.jar app.jar
 RUN bash -c 'touch /app.jar'
 RUN mkdir /config
+
 RUN mkdir /logs
 VOLUME ["/config", "/logs"]
 CMD ["java","-jar","/app.jar" ]

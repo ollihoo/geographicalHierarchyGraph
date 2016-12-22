@@ -56,7 +56,6 @@ dependencies {
 task copyDockerTemplates(type: Copy, dependsOn: 'build') {
     from "src/main/docker"
     into "build/docker"
-    filter(ReplaceTokens, tokens: [applicationVersion: applicationVersion])
 }
 
 task copyJarToDocker(type: Copy, dependsOn: 'copyDockerTemplates') {
@@ -82,4 +81,8 @@ task dockerPush(type: Exec, dependsOn: 'dockerBuild') {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.2.1'
+}
+
+jar {
+    filter(ReplaceTokens, tokens: [applicationVersion: applicationVersion])
 }
