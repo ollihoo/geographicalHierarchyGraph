@@ -57,10 +57,11 @@
     copy:
       src: ./application.properties
       dest: "{{appConfigDir}}"
-  - name: install geographicalHierarchyGraphServer
+  - name: install geoserver
     docker_container:
       name: geoserver
       image: "ollihoo/geographicalhierarchygraph:latest"
+      pull: yes
       state: started
       restart: yes
       restart_policy: always
