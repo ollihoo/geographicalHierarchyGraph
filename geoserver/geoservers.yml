@@ -12,61 +12,9 @@
   become: true
   become_user: root
   tasks:
-  - name: ensure server is up-to-date
-    apt:
-      upgrade: dist
-      update_cache: yes
-  - name: install docker.io
-    apt:
-      name: docker.io
-  - name: install docker-py
-    pip:
-      name: docker-py
-  - name: create application directory for logging
-    file:
-      path: "{{ appLogsDir }}"
-      state: directory
-  - name: create application directory for configuration
-    file:
-      path: "{{ appConfigDir }}"
-      state: directory
-  - name: create data directory for neo4j
-    file:
-      path: "{{ neo4jDataDir }}"
-      state: directory
-  - name: create logs directory for neo4j
-    file:
-      path: "{{ neo4jLogsDir }}"
-      state: directory
+  - name: setup infrastructure
+    include: ubuntu-basic.yml
   - name: install neo4j
-    docker_container:
-      name: neo4j
-      image: neo4j:latest
-      state: started
-      restart: yes
-      restart_policy: always
-      env:
-        NEO4J_AUTH: "{{neo4jUser}}/{{neo4jPassword}}"
-      published_ports:
-        - "7474:7474"
-        - "7687:7687"
-      volumes:
-        - "{{ neo4jDataDir }}:/data"
-        - "{{ neo4jLogsDir }}:/logs"
-  - name: copy configuration into config file
-    copy:
-      src: ./application.properties
-      dest: "{{appConfigDir}}"
+    include: neo4j.yml
   - name: install geoserver
-    docker_container:
-      name: geoserver
-      image: "ollihoo/geographicalhierarchygraph:latest"
-      pull: yes
-      state: started
-      restart: yes
-      restart_policy: always
-      published_ports:
-        - "80:8080"
-      volumes:
-        - "{{ appConfigDir }}:/config"
-        - "{{ appLogsDir }}:/logs"
+    include: geoserverapplication.yml
