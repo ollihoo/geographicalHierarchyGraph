@@ -1,4 +1,5 @@
 *.iml
 *.retry
+*.log
 .idea/
 .vagrant/
