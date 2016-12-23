@@ -1,0 +1,1 @@
+This directory is used for the logs produced by the geoserver docker container
