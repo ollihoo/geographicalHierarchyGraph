@@ -3,3 +3,4 @@
 *.log
 .idea/
 .vagrant/
+geoserver/neo4j/
