@@ -16,8 +16,8 @@ Vagrant.configure(2) do |config|
 #  config.vm.provision :shell, path: "bootstrap.sh"
 
   config.vm.provision :ansible_local do |ansible|
-       ansible.playbook = "./geoservers.yml"
-       ansible.inventory_path = "./inventory.ini"
+       ansible.playbook = "./playbook.yml"
+       ansible.inventory_path = "./inventory"
        ansible.verbose        = true
        ansible.install        = true
        ansible.install_mode   = :pip
