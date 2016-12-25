@@ -14,4 +14,4 @@
   roles:
     - bootstrap
     - neo4j
-    - webserver
+    - geoserver
