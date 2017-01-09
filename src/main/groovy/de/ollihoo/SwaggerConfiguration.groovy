@@ -44,7 +44,7 @@ class SwaggerConfiguration {
     private TypeResolver typeResolver
 
     @Bean
-    public Docket petApi() {
+    Docket getApiDefinition() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController))
@@ -54,7 +54,7 @@ class SwaggerConfiguration {
                 .directModelSubstitute(LocalDate.class,
                 String.class)
                 .genericModelSubstitutes(ResponseEntity.class)
-                .alternateTypeRules(getTypeRules())
+//                .alternateTypeRules(getTypeRules())
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, getGlobalResponseMessage())
                 .securitySchemes(newArrayList(apiKey()))
@@ -109,9 +109,10 @@ class SwaggerConfiguration {
     }
 
     private AlternateTypeRule getTypeRules() {
-        newRule(typeResolver.resolve(DeferredResult.class,
-                typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
-                typeResolver.resolve(WildcardType.class))
+        newRule(
+                typeResolver.resolve(DeferredResult, typeResolver.resolve(ResponseEntity, WildcardType)),
+                typeResolver.resolve(WildcardType)
+        )
     }
 
     private ArrayList<Parameter> getGlobalOperationParameters() {
