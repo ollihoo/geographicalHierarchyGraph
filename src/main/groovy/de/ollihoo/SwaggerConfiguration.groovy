@@ -1,14 +1,17 @@
 package de.ollihoo
 
 import com.fasterxml.classmate.TypeResolver
+import com.google.common.base.Predicate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.async.DeferredResult
+import springfox.documentation.RequestHandler
 import springfox.documentation.builders.ParameterBuilder
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
@@ -23,6 +26,7 @@ import springfox.documentation.service.SecurityReference
 import springfox.documentation.service.Tag
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spi.service.contexts.SecurityContext
+import springfox.documentation.spring.web.plugins.ApiSelectorBuilder
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger.web.ApiKeyVehicle
 import springfox.documentation.swagger.web.SecurityConfiguration
@@ -39,20 +43,25 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule
 @EnableSwagger2
 @ComponentScan(basePackages = ['de.ollihoo'])
 class SwaggerConfiguration {
+    static final RESTCONTROLLER_ANNOTATION = RequestHandlerSelectors.withClassAnnotation(RestController)
+    static final ANY_PATH = PathSelectors.any()
 
     @Autowired
     private TypeResolver typeResolver
 
+    @Autowired
+    private DocketFactory docketFactory
+
     @Bean
     Docket getApiDefinition() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.withClassAnnotation(RestController))
-                .paths(PathSelectors.any())
-                .build()
-                .pathMapping("/")
-                .directModelSubstitute(LocalDate.class,
-                String.class)
+        Docket docket = docketFactory.swagger2Docket
+
+        ApiSelectorBuilder apiSelectorBuilder = docket.select()
+
+        Docket updatedDocket = apiSelectorBuilder.apis(RESTCONTROLLER_ANNOTATION).paths(ANY_PATH).build()
+
+        updatedDocket.pathMapping("/")
+                .directModelSubstitute(LocalDate.class, String.class)
                 .genericModelSubstitutes(ResponseEntity.class)
 //                .alternateTypeRules(getTypeRules())
                 .useDefaultResponseMessages(false)
@@ -63,7 +72,7 @@ class SwaggerConfiguration {
                 .globalOperationParameters(getGlobalOperationParameters())
                 .tags(new Tag("Geo Service", "Attractions and their geo-positions as a service"))
 //                .additionalModels(typeResolver.resolve(AdditionalModel.class))
-
+        updatedDocket
     }
 
     List<SecurityReference> defaultAuth() {
@@ -136,4 +145,12 @@ class SwaggerConfiguration {
                 .build();
     }
 
+}
+
+@Component
+class DocketFactory {
+
+    Docket getSwagger2Docket() {
+        new Docket(DocumentationType.SWAGGER_2)
+    }
 }
