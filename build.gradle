@@ -27,6 +27,7 @@ ext {
 version = '1.0'
 def springBootVersion = '1.4.2.RELEASE'
 def boltVersion = '2.0.5'
+def swaggerVersion = '2.6.1'
 group = 'ollihoo'
 
 
@@ -43,6 +44,10 @@ jar {
 
 dependencies {
     compile('org.codehaus.groovy:groovy-all:2.4.7')
+
+    compile("io.springfox:springfox-swagger2:$swaggerVersion")
+    compile("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:$springBootVersion")

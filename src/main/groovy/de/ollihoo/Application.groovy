@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @ComponentScan(basePackages = ['de.ollihoo'])
-public class Application implements CommandLineRunner  {
+public class Application implements CommandLineRunner {
 
     @Override
     void run(String... args) throws Exception {}
